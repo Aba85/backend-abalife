@@ -1,11 +1,9 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "npm run migrate && node src/index.js",
-    "migrate": "prisma migrate deploy"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -17,10 +15,6 @@
     "express": "^5.1.0",
     "pg": "^8.16.1",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.7",
-    "@prisma/client": "^5.13.0"
-  },
-  "devDependencies": {
-    "prisma": "^5.13.0"
+    "sequelize": "^6.37.7"
   }
 }
