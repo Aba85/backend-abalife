@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
+app.use(express.json()); // <-- importante para ler JSON no body das requisições
 
 // Conexão principal com Sequelize
 const sequelize = require('./models');
@@ -26,13 +27,17 @@ sequelize.sync({ alter: true })
     console.error('❌ Erro ao sincronizar tabelas:', err.message);
   });
 
+// ✅ Conecta as rotas de usuários
+const usuariosRoutes = require('./routes/usuariosRoutes');
+app.use('/usuarios', usuariosRoutes);
+
 // Rota principal para teste
 app.get('/', (req, res) => {
   res.send('API Aba Life funcionando!');
 });
 
 // Inicializa o servidor
-app.listen(3000, () => {
-  console.log('Servidor rodando na porta 3000');
-});
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+}); 
