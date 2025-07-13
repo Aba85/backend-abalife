@@ -6,6 +6,7 @@ const UsuarioController = require('../controllers/UsuarioController');
 router.get('/', UsuarioController.index);
 
 // Cadastrar novo usuário (POST)
-router.post('/', UsuarioController.cadastrarUsuario);
+router.post('/', UsuarioController.criar);
 
 module.exports = router; 
+// Forçando redeploy manual em 13/07

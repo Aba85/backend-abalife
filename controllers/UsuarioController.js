@@ -2,7 +2,7 @@ const Usuario = require('../models/usuario');
 const bcrypt = require('bcrypt');
 
 module.exports = {
-  async cadastrarUsuario(req, res) {
+  async criar(req, res) {
     try {
       const {
         nome,
@@ -47,4 +47,3 @@ module.exports = {
     }
   }
 }; 
-// Forçando redeploy manual em 13/07
