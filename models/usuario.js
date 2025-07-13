@@ -20,7 +20,7 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false,
     unique: true,
   },
-  telefone: {
+  celular: {
     type: DataTypes.STRING,
     allowNull: false,
   },
