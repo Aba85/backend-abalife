@@ -1,0 +1,51 @@
+// controllers/AuthController.js
+const { Usuario } = require('../models');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const login = async (req, res) => {
+  const { cpf, senha } = req.body;
+
+  try {
+    if (!cpf || !senha) {
+      return res.status(400).json({ erro: 'CPF e senha são obrigatórios.' });
+    }
+
+    const usuario = await Usuario.findOne({ where: { cpf } });
+
+    if (!usuario) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+
+    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+
+    if (!senhaValida) {
+      return res.status(401).json({ erro: 'Senha incorreta.' });
+    }
+
+    const token = jwt.sign(
+      { id: usuario.id, cpf: usuario.cpf },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.json({
+      mensagem: 'Login realizado com sucesso.',
+      token,
+      usuario: {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        cpf: usuario.cpf,
+        celular: usuario.celular
+      }
+    });
+  } catch (erro) {
+    console.error('Erro no login:', erro);
+    return res.status(500).json({ erro: 'Erro interno no login.' });
+  }
+};
+
+module.exports = {
+  login
+};

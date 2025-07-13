@@ -1,0 +1,13 @@
+// routes/corridas.js
+const express = require('express');
+const router = express.Router();
+const CorridaController = require('../controllers/CorridaController');
+const authMiddleware = require('../middlewares/authMiddleware');
+
+router.post('/corridas/chamar', authMiddleware, CorridaController.chamarCorrida);
+router.post('/corridas/:corridaId/aceitar', authMiddleware, CorridaController.aceitarCorrida);
+router.post('/corridas/:corridaId/iniciar', authMiddleware, CorridaController.iniciarCorrida);
+router.post('/corridas/:corridaId/finalizar', authMiddleware, CorridaController.finalizarCorrida);
+router.get('/corridas', authMiddleware, CorridaController.listarCorridas);
+
+module.exports = router;
