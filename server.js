@@ -8,7 +8,7 @@ app.use('/usuarios', usuariosRoutes);
 
 // Sequelize - conecta e sincroniza modelos
 const sequelize = require('./models/index'); // conexão com o banco
-const Usuario = require('./models/Usuario'); // importa o model
+const Usuario = require('./models/usuario'); // importa o model
 
 // Sincroniza modelos com o banco
 sequelize.sync({ alter: true })
