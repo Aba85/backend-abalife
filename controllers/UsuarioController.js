@@ -1,31 +1,49 @@
+const Usuario = require('../models/usuario');
+const bcrypt = require('bcrypt');
+
 module.exports = {
-  index(req, res) {
-    res.json({ mensagem: 'Listando usuários do Aba Life' });
-  },
+  async criar(req, res) {
+    try {
+      const {
+        nome,
+        email,
+        senha,
+        cpf,
+        celular,
+        codigoIndicacao,
+        tipo
+      } = req.body;
 
-  store(req, res) {
-    const { nome, email, senha, cpf, celular } = req.body;
+      if (!nome || !email || !senha || !cpf || !celular || !tipo) {
+        return res.status(400).json({ error: 'Todos os campos obrigatórios devem ser preenchidos.' });
+      }
 
-    if (!nome || !email || !senha || !cpf || !celular) {
-      return res.status(400).json({ erro: 'Todos os campos são obrigatórios (nome, email, senha, cpf, celular)' });
+      const usuarioExistente = await Usuario.findOne({ where: { email } });
+      if (usuarioExistente) {
+        return res.status(400).json({ error: 'E-mail já cadastrado.' });
+      }
+
+      const cpfExistente = await Usuario.findOne({ where: { cpf } });
+      if (cpfExistente) {
+        return res.status(400).json({ error: 'CPF já cadastrado.' });
+      }
+
+      const senhaCriptografada = await bcrypt.hash(senha, 10);
+
+      const novoUsuario = await Usuario.create({
+        nome,
+        email,
+        senha: senhaCriptografada,
+        cpf,
+        celular,
+        codigoIndicacao,
+        tipo
+      });
+
+      return res.status(201).json({ message: 'Usuário criado com sucesso', usuario: novoUsuario });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao criar usuário' });
     }
-
-    // Validação simples de CPF
-    const cpfLimpo = cpf.replace(/\D/g, '');
-    if (cpfLimpo.length !== 11) {
-      return res.status(400).json({ erro: 'CPF inválido' });
-    }
-
-    // Validação simples de celular (11 dígitos, ex: 71999999999)
-    const celularLimpo = celular.replace(/\D/g, '');
-    if (celularLimpo.length !== 11) {
-      return res.status(400).json({ erro: 'Celular inválido. Use DDD + número (ex: 71999999999)' });
-    }
-
-    // Resposta simulada
-    res.status(201).json({
-      mensagem: 'Usuário cadastrado com sucesso',
-      usuario: { nome, email, cpf, celular }
-    });
   }
 }; 
