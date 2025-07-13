@@ -14,7 +14,7 @@ const sequelize = new Sequelize(
 );
 
 const Usuario = require('./usuario')(sequelize, DataTypes);
-const Corrida = require('./Corrida')(sequelize, DataTypes);
+const Corrida = require('./corrida')(sequelize, DataTypes);
 
 Usuario.hasMany(Corrida, { foreignKey: 'passageiroId' });
 Corrida.belongsTo(Usuario, { foreignKey: 'passageiroId' });
