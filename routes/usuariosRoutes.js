@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const UsuarioController = require('../controllers/UsuarioController');
 
-// Listar usuários (GET)
-router.get('/', UsuarioController.index);
-
-// Cadastrar novo usuário (POST)
+// Rota de cadastro de novo usuário
 router.post('/', UsuarioController.criar);
 
+// Rota de listagem ainda não implementada — deixar comentada por enquanto
+// router.get('/', UsuarioController.index);
+
 module.exports = router; 
-// Forçando redeploy manual em 13/07
