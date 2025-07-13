@@ -1,49 +1,38 @@
-const Usuario = require('../models/usuario');
-const bcrypt = require('bcrypt');
+const Usuario = require('../models/Usuario');
+const bcrypt = require('bcryptjs');
 
-module.exports = {
-  async criar(req, res) {
-    try {
-      const {
-        nome,
-        email,
-        senha,
-        cpf,
-        celular,
-        codigoIndicacao,
-        tipo
-      } = req.body;
+exports.cadastrar = async (req, res) => {
+  try {
+    const { nome, email, senha, cpf, telefone } = req.body;
 
-      if (!nome || !email || !senha || !cpf || !celular || !tipo) {
-        return res.status(400).json({ error: 'Todos os campos obrigatórios devem ser preenchidos.' });
-      }
-
-      const usuarioExistente = await Usuario.findOne({ where: { email } });
-      if (usuarioExistente) {
-        return res.status(400).json({ error: 'E-mail já cadastrado.' });
-      }
-
-      const cpfExistente = await Usuario.findOne({ where: { cpf } });
-      if (cpfExistente) {
-        return res.status(400).json({ error: 'CPF já cadastrado.' });
-      }
-
-      const senhaCriptografada = await bcrypt.hash(senha, 10);
-
-      const novoUsuario = await Usuario.create({
-        nome,
-        email,
-        senha: senhaCriptografada,
-        cpf,
-        celular,
-        codigoIndicacao,
-        tipo
-      });
-
-      return res.status(201).json({ message: 'Usuário criado com sucesso', usuario: novoUsuario });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Erro ao criar usuário' });
+    if (!nome || !email || !senha || !cpf || !telefone) {
+      return res.status(400).json({ erro: 'Todos os campos são obrigatórios.' });
     }
+
+    const existeEmail = await Usuario.findOne({ where: { email } });
+    if (existeEmail) {
+      return res.status(400).json({ erro: 'Email já cadastrado.' });
+    }
+
+    const existeCpf = await Usuario.findOne({ where: { cpf } });
+    if (existeCpf) {
+      return res.status(400).json({ erro: 'CPF já cadastrado.' });
+    }
+
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    const novoUsuario = await Usuario.create({
+      nome,
+      email,
+      senha: senhaHash,
+      cpf,
+      telefone,
+    });
+
+    return res.status(201).json({ mensagem: 'Usuário cadastrado com sucesso', usuario: novoUsuario });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ erro: 'Erro interno no servidor.' });
   }
-}; 
+};
+
