@@ -10,11 +10,13 @@ app.use(cors());
 const corridasAgendadasRoutes = require('./routes/corridasAgendadas');
 const identidadeRoutes = require('./routes/identidade');
 const relatorioRoutes = require('./routes/relatorios');
+const usuarioRoutes = require('./routes/usuario'); // ✅ Adicionado
 
 // Uso das rotas
 app.use(corridasAgendadasRoutes);
 app.use(identidadeRoutes);
 app.use(relatorioRoutes);
+app.use(usuarioRoutes); // ✅ Ativado
 
 // Inicialização do servidor
 const PORT = process.env.PORT || 3000;
