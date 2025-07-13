@@ -1,0 +1,77 @@
+{
+  "info": {
+    "name": "Aba Life API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "aba-life-collection"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cpf\": \"12345678900\",\n  \"senha\": \"senha123\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{url}}/usuarios/login", "host": ["{{url}}"], "path": ["usuarios", "login"] }
+      }
+    },
+    {
+      "name": "Cadastro",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"João\",\n  \"email\": \"joao@email.com\",\n  \"cpf\": \"12345678900\",\n  \"celular\": \"71999999999\",\n  \"senha\": \"senha123\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{url}}/usuarios/cadastro", "host": ["{{url}}"], "path": ["usuarios", "cadastro"] }
+      }
+    },
+    {
+      "name": "Chamar Corrida",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"passageiroCpf\": \"12345678900\",\n  \"origem\": \"Rua A\",\n  \"destino\": \"Rua B\",\n  \"valor\": 18.5\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{url}}/corridas/chamar", "host": ["{{url}}"], "path": ["corridas", "chamar"] }
+      }
+    },
+    {
+      "name": "Agendar Corrida",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"passageiroCpf\": \"12345678900\",\n  \"origem\": \"Rua A\",\n  \"destino\": \"Rua B\",\n  \"dataHoraAgendada\": \"2025-07-20T14:30:00Z\",\n  \"tipo\": \"agendada\",\n  \"valor\": 25.0\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{url}}/corridas/agendar", "host": ["{{url}}"], "path": ["corridas", "agendar"] }
+      }
+    },
+    {
+      "name": "Ver Recompensas",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+        "url": { "raw": "{{url}}/recompensas/12345678900", "host": ["{{url}}"], "path": ["recompensas", "12345678900"] }
+      }
+    },
+    {
+      "name": "Relatório Recompensas",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+        "url": { "raw": "{{url}}/relatorios/recompensas/12345678900", "host": ["{{url}}"], "path": ["relatorios", "recompensas", "12345678900"] }
+      }
+    }
+  ]
+}

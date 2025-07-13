@@ -1,10 +1,10 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
-  process.env.DB_PASS,
+  process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -13,8 +13,14 @@ const sequelize = new Sequelize(
   }
 );
 
-sequelize.authenticate()
-  .then(() => console.log('🟢 Sequelize conectado ao PostgreSQL!'))
-  .catch(err => console.error('🔴 Erro ao conectar Sequelize:', err.message));
+const Usuario = require('./Usuario')(sequelize, DataTypes);
+const Corrida = require('./Corrida')(sequelize, DataTypes);
 
-module.exports = sequelize;
+Usuario.hasMany(Corrida, { foreignKey: 'passageiroId' });
+Corrida.belongsTo(Usuario, { foreignKey: 'passageiroId' });
+
+module.exports = {
+  sequelize,
+  Usuario,
+  Corrida,
+}; 

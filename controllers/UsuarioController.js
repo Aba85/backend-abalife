@@ -1,53 +1,64 @@
-const Usuario = require('../models/usuario');
+// controllers/UsuarioController.js
+const { Usuario } = require('../models');
 const bcrypt = require('bcryptjs');
 
-exports.cadastrar = async (req, res) => {
+const criar = async (req, res) => {
+  const { nome, email, cpf, celular, senha, codigoIndicacao, perfil } = req.body;
+
   try {
-    const { nome, email, senha, cpf, telefone } = req.body;
-
-    // Verificação de campos obrigatórios
-    if (!nome || !email || !senha || !cpf || !telefone) {
-      return res.status(400).json({ erro: 'Todos os campos são obrigatórios.' });
+    if (!nome || !email || !cpf || !celular || !senha) {
+      return res.status(400).json({ erro: 'Todos os campos obrigatórios devem ser preenchidos.' });
     }
 
-    // Verifica se email já está cadastrado
-    const existeEmail = await Usuario.findOne({ where: { email } });
-    if (existeEmail) {
-      return res.status(400).json({ erro: 'Email já cadastrado.' });
+    // Valida CPF (formato simples)
+    if (!/^\d{11}$/.test(cpf)) {
+      return res.status(400).json({ erro: 'CPF inválido. Use apenas números.' });
     }
 
-    // Verifica se CPF já está cadastrado
-    const existeCpf = await Usuario.findOne({ where: { cpf } });
-    if (existeCpf) {
-      return res.status(400).json({ erro: 'CPF já cadastrado.' });
+    // Valida senha (mínimo 6 caracteres)
+    if (senha.length < 6) {
+      return res.status(400).json({ erro: 'Senha muito curta. Mínimo 6 caracteres.' });
     }
 
-    // Gera hash da senha
+    // Verifica se CPF ou e-mail já existem
+    const usuarioExistente = await Usuario.findOne({ where: { cpf } });
+    if (usuarioExistente) {
+      return res.status(409).json({ erro: 'Usuário com este CPF já existe.' });
+    }
+
+    const emailExistente = await Usuario.findOne({ where: { email } });
+    if (emailExistente) {
+      return res.status(409).json({ erro: 'E-mail já cadastrado.' });
+    }
+
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    // Cria o novo usuário
     const novoUsuario = await Usuario.create({
       nome,
       email,
-      senha: senhaHash,
       cpf,
-      telefone,
+      celular,
+      senha: senhaHash,
+      codigoIndicacao,
+      perfil: perfil || 'passageiro'
     });
 
-    // Retorna somente os dados não sensíveis
-    return res.status(201).json({
-      mensagem: 'Usuário cadastrado com sucesso',
+    res.status(201).json({
+      mensagem: 'Usuário cadastrado com sucesso.',
       usuario: {
         id: novoUsuario.id,
         nome: novoUsuario.nome,
         email: novoUsuario.email,
         cpf: novoUsuario.cpf,
-        telefone: novoUsuario.telefone,
-      },
+        celular: novoUsuario.celular
+      }
     });
-
-  } catch (error) {
-    console.error('Erro ao cadastrar usuário:', error);
-    return res.status(500).json({ erro: 'Erro interno no servidor.' });
+  } catch (erro) {
+    console.error('Erro ao cadastrar usuário:', erro);
+    res.status(500).json({ erro: 'Erro interno ao cadastrar usuário.' });
   }
-}; 
+};
+
+module.exports = {
+  criar
+};

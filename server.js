@@ -1,26 +1,23 @@
 const express = require('express');
 const app = express();
-app.use(express.json()); // Para interpretar JSON
+const cors = require('cors');
 
-// Importa rotas
-const usuariosRoutes = require('./routes/usuarios');
-app.use('/usuarios', usuariosRoutes);
+// Configurações globais
+app.use(express.json());
+app.use(cors());
 
-// Sequelize - conecta e sincroniza modelos
-const sequelize = require('./models/index'); // conexão com o banco
-const Usuario = require('./models/usuario'); // importa o model
+// Importação de rotas
+const corridasAgendadasRoutes = require('./routes/corridasAgendadas');
+const identidadeRoutes = require('./routes/identidade');
+const relatorioRoutes = require('./routes/relatorios');
 
-// Sincroniza modelos com o banco
-sequelize.sync({ alter: true })
-  .then(() => {
-    console.log('Modelos sincronizados com o banco de dados!');
-  })
-  .catch((error) => {
-    console.error('Erro ao sincronizar com o banco:', error);
-  });
+// Uso das rotas
+app.use(corridasAgendadasRoutes);
+app.use(identidadeRoutes);
+app.use(relatorioRoutes);
 
 // Inicialização do servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 }); 
