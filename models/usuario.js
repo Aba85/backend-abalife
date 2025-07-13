@@ -17,24 +17,15 @@ const Usuario = sequelize.define('Usuario', {
   },
   cpf: {
     type: DataTypes.STRING,
+    allowNull: false,
     unique: true,
-    allowNull: false,
   },
-  celular: {
+  telefone: {
     type: DataTypes.STRING,
-    allowNull: false,
-  },
-  codigoIndicacao: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  tipo: {
-    type: DataTypes.ENUM('motorista', 'passageiro'),
     allowNull: false,
   },
 }, {
-  tableName: 'usuarios',
   timestamps: true,
 });
 
-module.exports = Usuario; 
+module.exports = Usuario;
