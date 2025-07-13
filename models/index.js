@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
   }
 );
 
-const Usuario = require('./Usuario')(sequelize, DataTypes);
+const Usuario = require('./usuario')(sequelize, DataTypes);
 const Corrida = require('./Corrida')(sequelize, DataTypes);
 
 Usuario.hasMany(Corrida, { foreignKey: 'passageiroId' });
