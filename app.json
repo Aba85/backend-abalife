@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "05bc78a5-3faf-4734-bf26-4188a14dfd86"
+      }
+    },
+    "android": {
+      "package": "com.borba85.backend"
+    }
+  }
+}

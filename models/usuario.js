@@ -6,16 +6,30 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  tipo: {
-    type: DataTypes.ENUM('motorista', 'passageiro'),
-    allowNull: false,
-  },
   email: {
     type: DataTypes.STRING,
     unique: true,
+    allowNull: false,
   },
   senha: {
     type: DataTypes.STRING,
+    allowNull: false,
+  },
+  cpf: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: false,
+  },
+  celular: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  codigoIndicacao: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  tipo: {
+    type: DataTypes.ENUM('motorista', 'passageiro'),
     allowNull: false,
   },
 }, {
@@ -23,4 +37,4 @@ const Usuario = sequelize.define('Usuario', {
   timestamps: true,
 });
 
-module.exports = Usuario;
+module.exports = Usuario; 
