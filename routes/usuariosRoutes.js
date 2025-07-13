@@ -6,6 +6,6 @@ const UsuarioController = require('../controllers/UsuarioController');
 router.get('/', UsuarioController.index);
 
 // Cadastrar novo usuário (POST)
-router.post('/', UsuarioController.criar);
+router.post('/', UsuarioController.cadastrarUsuario);
 
 module.exports = router; 
