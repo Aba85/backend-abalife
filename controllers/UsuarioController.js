@@ -2,7 +2,7 @@
 const { Usuario } = require('../models');
 const bcrypt = require('bcryptjs');
 
-const criar = async (req, res) => {
+const cadastrar = async (req, res) => {
   const { nome, email, cpf, celular, senha, codigoIndicacao, perfil } = req.body;
 
   try {
@@ -59,6 +59,4 @@ const criar = async (req, res) => {
   }
 };
 
-module.exports = {
-  criar
-};
+module.exports = { cadastrar, login };
