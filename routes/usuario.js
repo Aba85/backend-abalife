@@ -1,4 +1,4 @@
-// models/usuario.js
+// backend-abalife/src/models/usuario.js
 
 module.exports = (sequelize, DataTypes) => {
   const Usuario = sequelize.define('Usuario', {
