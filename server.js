@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 // Importação das rotas
-const corridasAgendadasRoutes = require('./routes/corridasAgendadas');
+const corridasAgendadasRoutes = require('./routes/corridasAgendadas.js');
 const identidadeRoutes = require('./routes/identidade');
 const relatorioRoutes = require('./routes/relatorios');
 const usuarioRoutes = require('./routes/usuario'); // <-- rotas de usuário
