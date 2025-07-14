@@ -1,3 +1,5 @@
+// server.js
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -10,17 +12,17 @@ app.use(cors());
 const corridasAgendadasRoutes = require('./routes/corridasAgendadas');
 const identidadeRoutes = require('./routes/identidade');
 const relatorioRoutes = require('./routes/relatorios');
-const usuarioRoutes = require('./routes/usuario');
+const usuarioRoutes = require('./routes/usuario'); // <-- rotas de usuário
 
-// Uso das rotas
-app.use(corridasAgendadasRoutes);
-app.use(identidadeRoutes);
-app.use(relatorioRoutes);
-app.use(usuarioRoutes);
+// Uso das rotas com prefixo
+app.use('/corridas-agendadas', corridasAgendadasRoutes);
+app.use('/identidade', identidadeRoutes);
+app.use('/relatorios', relatorioRoutes);
+app.use('/usuarios', usuarioRoutes); // <-- prefixo corrigido
 
 // Sincronização do banco de dados
 const db = require('./models');
-db.sequelize.sync({ alter: true }) // aplica alterações no banco automaticamente
+db.sequelize.sync({ alter: true })
   .then(() => {
     console.log('✅ Banco de dados sincronizado com sucesso.');
   })
