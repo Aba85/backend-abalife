@@ -16,8 +16,7 @@ const usuarioRoutes = require('./routes/usuario'); // ✅ Adicionado
 app.use(corridasAgendadasRoutes);
 app.use(identidadeRoutes);
 app.use(relatorioRoutes);
-app.use(usuarioRoutes); // ✅ Ativado
-
+app.use('/usuarios', usuarioRoutes); 
 // Inicialização do servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
