@@ -1,6 +1,10 @@
 // controllers/UsuarioController.js
+
 const { Usuario } = require('../models');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const SECRET = process.env.JWT_SECRET || 'segredo_aba_life'; // Trocar por variável segura no ambiente
 
 const cadastrar = async (req, res) => {
   const { nome, email, cpf, celular, senha, codigoIndicacao, perfil } = req.body;
@@ -10,25 +14,22 @@ const cadastrar = async (req, res) => {
       return res.status(400).json({ erro: 'Todos os campos obrigatórios devem ser preenchidos.' });
     }
 
-    // Valida CPF (formato simples)
     if (!/^\d{11}$/.test(cpf)) {
-      return res.status(400).json({ erro: 'CPF inválido. Use apenas números.' });
+      return res.status(400).json({ erro: 'CPF inválido. Use 11 dígitos numéricos.' });
     }
 
-    // Valida senha (mínimo 6 caracteres)
     if (senha.length < 6) {
-      return res.status(400).json({ erro: 'Senha muito curta. Mínimo 6 caracteres.' });
+      return res.status(400).json({ erro: 'Senha deve ter no mínimo 6 caracteres.' });
     }
 
-    // Verifica se CPF ou e-mail já existem
-    const usuarioExistente = await Usuario.findOne({ where: { cpf } });
-    if (usuarioExistente) {
-      return res.status(409).json({ erro: 'Usuário com este CPF já existe.' });
+    const existeCpf = await Usuario.findOne({ where: { cpf } });
+    if (existeCpf) {
+      return res.status(409).json({ erro: 'Já existe um usuário com este CPF.' });
     }
 
-    const emailExistente = await Usuario.findOne({ where: { email } });
-    if (emailExistente) {
-      return res.status(409).json({ erro: 'E-mail já cadastrado.' });
+    const existeEmail = await Usuario.findOne({ where: { email } });
+    if (existeEmail) {
+      return res.status(409).json({ erro: 'Já existe um usuário com este e-mail.' });
     }
 
     const senhaHash = await bcrypt.hash(senha, 10);
@@ -40,23 +41,53 @@ const cadastrar = async (req, res) => {
       celular,
       senha: senhaHash,
       codigoIndicacao,
-      perfil: perfil || 'passageiro'
+      perfil: perfil || 'passageiro',
     });
 
-    res.status(201).json({
-      mensagem: 'Usuário cadastrado com sucesso.',
-      usuario: {
-        id: novoUsuario.id,
-        nome: novoUsuario.nome,
-        email: novoUsuario.email,
-        cpf: novoUsuario.cpf,
-        celular: novoUsuario.celular
-      }
-    });
-  } catch (erro) {
-    console.error('Erro ao cadastrar usuário:', erro);
-    res.status(500).json({ erro: 'Erro interno ao cadastrar usuário.' });
+    return res.status(201).json({ mensagem: 'Usuário cadastrado com sucesso.', usuario: novoUsuario });
+  } catch (error) {
+    console.error('Erro ao cadastrar usuário:', error);
+    return res.status(500).json({ erro: 'Erro interno ao cadastrar.' });
   }
 };
 
-module.exports = { cadastrar, login };
+const login = async (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
+    return res.status(400).json({ erro: 'Email e senha são obrigatórios.' });
+  }
+
+  try {
+    const usuario = await Usuario.findOne({ where: { email } });
+
+    if (!usuario) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+
+    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+    if (!senhaValida) {
+      return res.status(401).json({ erro: 'Senha incorreta.' });
+    }
+
+    const token = jwt.sign(
+      {
+        id: usuario.id,
+        nome: usuario.nome,
+        perfil: usuario.perfil,
+      },
+      SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.status(200).json({ mensagem: 'Login realizado com sucesso.', token, usuario });
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+    return res.status(500).json({ erro: 'Erro interno ao fazer login.' });
+  }
+};
+
+module.exports = {
+  cadastrar,
+  login
+}; 
