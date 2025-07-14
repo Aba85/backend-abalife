@@ -10,9 +10,9 @@ app.use(cors());
 
 // Importação das rotas
 const corridasAgendadasRoutes = require('./routes/corridasAgendadas.js');
-const identidadeRoutes = require('./routes/identidade');
-const relatorioRoutes = require('./routes/relatorios');
-const usuarioRoutes = require('./routes/usuario'); // <-- rotas de usuário
+const identidadeRoutes = require('./routes/identidade.js');
+const relatorioRoutes = require('./routes/relatorios.js');
+const usuarioRoutes = require('./routes/usuario.js');
 
 // Uso das rotas com prefixo
 app.use('/corridas-agendadas', corridasAgendadasRoutes);
