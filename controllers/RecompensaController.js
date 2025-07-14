@@ -1,80 +1,110 @@
-// controllers/RecompensaController.js
-const { Indicacao, Corrida, Usuario } = require('../models');
+const { Recompensa, Usuario, Saque } = require('../models');
 const { Op } = require('sequelize');
 
-const calcularRecompensa = async (req, res) => {
-  const { cpf } = req.params;
-
+const listarHistorico = async (req, res) => {
   try {
-    const indicacoes = await Indicacao.findAll({
-      where: { indicanteCpf: cpf, confirmado: true }
+    const historico = await Recompensa.findAll({
+      where: { usuarioId: req.usuario.id },
+      order: [['createdAt', 'DESC']],
     });
 
-    if (!indicacoes.length) {
-      return res.json({ valorTotal: 0, detalhes: [] });
-    }
+    res.status(200).json(historico);
+  } catch (error) {
+    console.error('Erro ao listar recompensas:', error);
+    res.status(500).json({ erro: 'Erro interno ao buscar recompensas.' });
+  }
+};
 
-    const hoje = new Date();
-    const mesPassado = new Date();
-    mesPassado.setDate(hoje.getDate() - 30);
+const solicitarSaque = async (req, res) => {
+  const { valor } = req.body;
+  const usuario = await Usuario.findByPk(req.usuario.id);
 
-    const corridasDoIndicante = await Corrida.findAll({
+  try {
+    const saldoDisponivel = await Recompensa.sum('valor', {
       where: {
-        passageiroCpf: cpf,
-        finalizada: true,
-        data: { [Op.between]: [mesPassado, hoje] },
-        notaRecebida: { [Op.ne]: null }
+        usuarioId: usuario.id,
+        status: 'disponivel'
       }
     });
 
-    const mediaNota =
-      corridasDoIndicante.reduce((acc, c) => acc + c.notaRecebida, 0) / (corridasDoIndicante.length || 1);
-
-    if (corridasDoIndicante.length === 0 || mediaNota < 4.7) {
-      return res.json({ valorTotal: 0, mensagem: 'Não elegível: nota abaixo de 4.7 ou sem corridas.' });
+    if (!saldoDisponivel || valor > saldoDisponivel) {
+      return res.status(400).json({ erro: 'Saldo insuficiente.' });
     }
 
-    const qtdCorridas = corridasDoIndicante.length;
+    // Validação de regras específicas
+    const hoje = new Date();
+    const dataInicio = new Date();
+    let limiteValor = 0;
+    let limiteData = null;
 
-    let valorPorCorrida = 0.15;
-    if (qtdCorridas >= 2) valorPorCorrida = 0.25;
-    if (qtdCorridas >= 3) valorPorCorrida = 0.35;
-    if (qtdCorridas >= 4) valorPorCorrida = 0.5;
-
-    let valorTotal = 0;
-    const detalhes = [];
-
-    for (const indicacao of indicacoes) {
-      const corridasIndicados = await Corrida.findAll({
+    if (usuario.perfil === 'passageiro') {
+      limiteValor = 50;
+      dataInicio.setDate(hoje.getDate() - 7);
+      limiteData = await Saque.findOne({
         where: {
-          passageiroCpf: indicacao.indicadoCpf,
-          finalizada: true,
-          data: { [Op.between]: [mesPassado, hoje] }
-        }
+          usuarioId: usuario.id,
+          createdAt: { [Op.gte]: dataInicio },
+        },
       });
-
-      const qtd = corridasIndicados.length;
-      const total = qtd * valorPorCorrida;
-      valorTotal += total;
-
-      detalhes.push({
-        indicado: indicacao.indicadoCpf,
-        corridas: qtd,
-        valorGerado: total
-      });
+      if (limiteData) {
+        return res.status(400).json({ erro: 'Você só pode sacar uma vez por semana.' });
+      }
     }
 
-    return res.json({
-      valorTotal: valorTotal.toFixed(2),
-      valorPorCorrida,
-      detalhes
+    if (usuario.perfil === 'motorista') {
+      limiteValor = 10;
+      dataInicio.setDate(hoje.getDate() - 1);
+      limiteData = await Saque.findOne({
+        where: {
+          usuarioId: usuario.id,
+          createdAt: { [Op.gte]: dataInicio },
+        },
+      });
+      if (limiteData) {
+        return res.status(400).json({ erro: 'Você já solicitou um saque hoje.' });
+      }
+    }
+
+    if (valor < limiteValor) {
+      return res.status(400).json({ erro: `Valor mínimo para saque: R$ ${limiteValor.toFixed(2)}` });
+    }
+
+    // Registrar saque
+    await Saque.create({
+      usuarioId: usuario.id,
+      valor,
     });
-  } catch (erro) {
-    console.error('Erro ao calcular recompensa:', erro);
-    return res.status(500).json({ erro: 'Erro ao calcular recompensa.' });
+
+    // Atualizar recompensas como sacadas
+    const recompensas = await Recompensa.findAll({
+      where: {
+        usuarioId: usuario.id,
+        status: 'disponivel'
+      },
+      order: [['createdAt', 'ASC']],
+    });
+
+    let restante = valor;
+    for (const rec of recompensas) {
+      if (restante <= 0) break;
+
+      if (rec.valor <= restante) {
+        await rec.update({ status: 'resgatado' });
+        restante -= rec.valor;
+      } else {
+        await rec.update({ valor: rec.valor - restante });
+        restante = 0;
+      }
+    }
+
+    res.status(200).json({ mensagem: 'Saque solicitado com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao solicitar saque:', error);
+    res.status(500).json({ erro: 'Erro interno ao solicitar saque.' });
   }
 };
 
 module.exports = {
-  calcularRecompensa
+  listarHistorico,
+  solicitarSaque,
 };

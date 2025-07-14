@@ -1,19 +1,13 @@
-const { DataTypes } = require('sequelize');
-
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   const Corrida = sequelize.define('Corrida', {
     origem: DataTypes.STRING,
     destino: DataTypes.STRING,
-    status: {
-      type: DataTypes.STRING,
-      defaultValue: 'pendente',
-    },
-    passageiroId: DataTypes.INTEGER,
-    valor: DataTypes.FLOAT,
-    motoristaId: DataTypes.INTEGER,
-    dataHora: DataTypes.DATE,
+    status: DataTypes.STRING,
+    valor: DataTypes.DECIMAL,
+    tipo: DataTypes.ENUM('imediata', 'agendada', 'personalizada'),
+    horarioAgendado: DataTypes.DATE,
+    usuarioId: DataTypes.INTEGER
   });
 
   return Corrida;
 };
-

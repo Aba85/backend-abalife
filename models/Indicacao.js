@@ -1,20 +1,19 @@
-// models/Indicacao.js
 module.exports = (sequelize, DataTypes) => {
   const Indicacao = sequelize.define('Indicacao', {
-    indicadoCpf: {
-      type: DataTypes.STRING,
+    indicanteId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true
     },
-    indicanteCpf: {
-      type: DataTypes.STRING,
-      allowNull: false
+    indicadoId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
-    confirmado: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
   });
+
+  Indicacao.associate = (models) => {
+    Indicacao.belongsTo(models.Usuario, { as: 'Indicante', foreignKey: 'indicanteId' });
+    Indicacao.belongsTo(models.Usuario, { as: 'Indicado', foreignKey: 'indicadoId' });
+  };
 
   return Indicacao;
 };
