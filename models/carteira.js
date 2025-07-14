@@ -1,27 +1,22 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
+// models/Carteira.js
+module.exports = (sequelize, DataTypes) => {
+  const Carteira = sequelize.define('Carteira', {
+    usuarioId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    saldo: {
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0
+    }
+  });
 
-const Carteira = sequelize.define('Carteira', {
-  usuario_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  tipo: {
-    type: DataTypes.ENUM('motorista', 'passageiro'),
-    allowNull: false,
-  },
-  saldo: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-    defaultValue: 0.0,
-  },
-  ultima_atualizacao: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-}, {
-  tableName: 'carteiras',
-  timestamps: true,
-});
+  Carteira.associate = (models) => {
+    Carteira.belongsTo(models.Usuario, {
+      foreignKey: 'usuarioId',
+      as: 'usuario'
+    });
+  };
 
-module.exports = Carteira;
+  return Carteira;
+};

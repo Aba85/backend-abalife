@@ -1,39 +1,45 @@
-// controllers/IndicacaoController.js
-const { Indicacao, Usuario } = require('../models');
+const { Usuario, Indicacao } = require('../models');
 
 const registrarIndicacao = async (req, res) => {
-  const { indicadoCpf, codigoIndicacao } = req.body;
-
-  if (!indicadoCpf || !codigoIndicacao) {
-    return res.status(400).json({ erro: 'CPF do indicado e código de indicação são obrigatórios.' });
-  }
+  const { codigoIndicante } = req.body;
+  const usuarioId = req.usuario.id;
 
   try {
-    const indicante = await Usuario.findOne({ where: { codigoIndicacao } });
+    if (!codigoIndicante) {
+      return res.status(400).json({ erro: 'Código de indicação é obrigatório.' });
+    }
+
+    const indicado = await Usuario.findByPk(usuarioId);
+    if (indicado.indicanteId) {
+      return res.status(400).json({ erro: 'Você já está vinculado a um indicante.' });
+    }
+
+    const indicante = await Usuario.findOne({ where: { codigoUnico: codigoIndicante } });
 
     if (!indicante) {
       return res.status(404).json({ erro: 'Código de indicação inválido.' });
     }
 
-    const existente = await Indicacao.findOne({ where: { indicadoCpf } });
-
-    if (existente) {
-      return res.status(409).json({ erro: 'Este CPF já está vinculado a uma indicação.' });
+    if (indicado.perfil !== indicante.perfil) {
+      return res.status(400).json({ erro: 'A indicação deve ser entre usuários do mesmo tipo.' });
     }
 
-    const nova = await Indicacao.create({
-      indicadoCpf,
-      indicanteCpf: indicante.cpf,
-      confirmado: true
+    // Registrar indicação
+    indicado.indicanteId = indicante.id;
+    await indicado.save();
+
+    await Indicacao.create({
+      indicanteId: indicante.id,
+      indicadoId: indicado.id,
     });
 
-    return res.status(201).json({ mensagem: 'Indicação registrada com sucesso.', indicacao: nova });
-  } catch (erro) {
-    console.error('Erro ao registrar indicação:', erro);
-    return res.status(500).json({ erro: 'Erro interno ao registrar indicação.' });
+    res.status(200).json({ mensagem: 'Indicação registrada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao registrar indicação:', error);
+    res.status(500).json({ erro: 'Erro interno ao registrar indicação.' });
   }
 };
 
 module.exports = {
-  registrarIndicacao
+  registrarIndicacao,
 };

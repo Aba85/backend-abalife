@@ -1,6 +1,13 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const Sequelize = require('sequelize');
 require('dotenv').config();
 
+const basename = require('path').basename(__filename);
+const path = require('path');
+const fs = require('fs');
+
+const db = {};
+
+// Configuração do Sequelize usando variáveis separadas
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -13,14 +20,26 @@ const sequelize = new Sequelize(
   }
 );
 
-const Usuario = require('./usuario')(sequelize, DataTypes);
-const Corrida = require('./corrida')(sequelize, DataTypes);
+// Importa todos os modelos da pasta atual, exceto este arquivo
+fs.readdirSync(__dirname)
+  .filter(file => (
+    file.indexOf('.') !== 0 &&
+    file !== basename &&
+    file.slice(-3) === '.js'
+  ))
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
 
-Usuario.hasMany(Corrida, { foreignKey: 'passageiroId' });
-Corrida.belongsTo(Usuario, { foreignKey: 'passageiroId' });
+// Associações entre modelos (se existirem)
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
-module.exports = {
-  sequelize,
-  Usuario,
-  Corrida,
-}; 
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+module.exports = db; 

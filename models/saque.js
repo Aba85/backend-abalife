@@ -1,34 +1,30 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
+// models/Saque.js
+module.exports = (sequelize, DataTypes) => {
+  const Saque = sequelize.define('Saque', {
+    usuarioId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    valor: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('pendente', 'processado', 'recusado'),
+      defaultValue: 'pendente'
+    },
+    tipo: {
+      type: DataTypes.ENUM('recompensa', 'corrida'),
+      allowNull: false
+    }
+  });
 
-const Saque = sequelize.define('Saque', {
-  usuario_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  valor: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  status: {
-    type: DataTypes.ENUM('pendente', 'aprovado', 'recusado', 'pago'),
-    defaultValue: 'pendente',
-  },
-  tipo: {
-    type: DataTypes.ENUM('corrida', 'recompensa', 'ambos'),
-    allowNull: false,
-  },
-  pix: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  data_pedido: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-}, {
-  tableName: 'saques',
-  timestamps: true,
-});
+  Saque.associate = (models) => {
+    Saque.belongsTo(models.Usuario, {
+      foreignKey: 'usuarioId',
+      as: 'usuario'
+    });
+  };
 
-module.exports = Saque;
+  return Saque;
+};
