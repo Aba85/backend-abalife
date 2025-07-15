@@ -1,7 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
-
-const Parada = sequelize.define('Parada', {
+module.exports = (sequelize, DataTypes) => {
+  return sequelize.define('Parada', {
   corrida_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -30,5 +28,4 @@ const Parada = sequelize.define('Parada', {
   tableName: 'paradas',
   timestamps: true,
 });
-
-module.exports = Parada;
+      };

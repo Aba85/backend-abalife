@@ -1,7 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
-
-const PagamentoPessoal = sequelize.define('PagamentoPessoal', {
+module.exports = (sequelize, DataTypes) => {
+  return sequelize.define('PagamentoPessoal', {
   motorista_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -30,5 +28,4 @@ const PagamentoPessoal = sequelize.define('PagamentoPessoal', {
   tableName: 'pagamentos_pessoais',
   timestamps: true,
 });
-
-module.exports = PagamentoPessoal;
+      };

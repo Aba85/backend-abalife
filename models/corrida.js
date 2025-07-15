@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Corrida = sequelize.define('Corrida', {
+  return sequelize.define('Corrida', {
     origem: DataTypes.STRING,
     destino: DataTypes.STRING,
     status: DataTypes.STRING,
@@ -8,6 +8,4 @@ module.exports = (sequelize, DataTypes) => {
     horarioAgendado: DataTypes.DATE,
     usuarioId: DataTypes.INTEGER
   });
-
-  return Corrida;
-};
+}; 

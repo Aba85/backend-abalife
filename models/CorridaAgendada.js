@@ -1,6 +1,6 @@
 // models/CorridaAgendada.js
 module.exports = (sequelize, DataTypes) => {
-  const CorridaAgendada = sequelize.define('CorridaAgendada', {
+  return sequelize.define('CorridaAgendada', {
     passageiroCpf: {
       type: DataTypes.STRING,
       allowNull: false
@@ -34,6 +34,4 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     }
   });
-
-  return CorridaAgendada;
-};
+}; 

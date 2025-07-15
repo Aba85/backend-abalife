@@ -23,4 +23,6 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return Recompensa;
-};
+}; 
+
+
