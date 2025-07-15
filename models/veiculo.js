@@ -1,7 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
-
-const Veiculo = sequelize.define('Veiculo', {
+module.exports = (sequelize, DataTypes) => {
+  return sequelize.define('Veiculo', {
   motorista_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -20,20 +18,7 @@ const Veiculo = sequelize.define('Veiculo', {
     allowNull: false,
   },
   categoria: {
-    type: DataTypes.ENUM('alpha', 'delta', 'omega', 'mala', 'entrega', 'arca'),
-    allowNull: false,
-  },
-  status: {
-    type: DataTypes.ENUM('ativo', 'pendente', 'reprovado'),
-    defaultValue: 'pendente',
-  },
-  observacoes: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-}, {
-  tableName: 'veiculos',
-  timestamps: true,
-});
-
-module.exports = Veiculo;
+    type: DataTypes.ENUM('alpha', 'delta', 'omega', 'mala', 'entrega', 'arca')
+     },
+  });
+}; 

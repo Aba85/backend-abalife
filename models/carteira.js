@@ -1,6 +1,5 @@
-// models/Carteira.js
 module.exports = (sequelize, DataTypes) => {
-  const Carteira = sequelize.define('Carteira', {
+  return sequelize.define('Carteira', {
     usuarioId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -19,4 +18,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return Carteira;
-};
+}; 
