@@ -14,8 +14,6 @@ const validarCPF = (cpf) => {
 module.exports = {
   async cadastrar(req, res) {
     try {
-      console.log('req.body:', req.body);  // Linha adicionada para depuração
-
       const { nome, email, cpf, celular, senha, codigoIndicacao, perfil } = req.body;
 
       // Validações básicas
