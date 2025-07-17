@@ -1,28 +1,12 @@
-module.exports = (sequelize, DataTypes) => {
-  const Recompensa = sequelize.define('Recompensa', {
-    usuarioId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    descricao: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    valor: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.ENUM('disponivel', 'resgatado'),
-      defaultValue: 'disponivel',
-    },
-  });
+// caminho: models/Recompensa.js
 
-  Recompensa.associate = (models) => {
-    Recompensa.belongsTo(models.Usuario, { foreignKey: 'usuarioId' });
-  };
+const mongoose = require('mongoose');
 
-  return Recompensa;
-}; 
+const recompensaSchema = new mongoose.Schema({
+  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  descricao: { type: String, required: true },
+  valor: { type: Number, required: true },
+  data: { type: Date, default: Date.now },
+});
 
-
+module.exports = mongoose.model('Recompensa', recompensaSchema);
