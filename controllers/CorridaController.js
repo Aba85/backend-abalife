@@ -1,103 +1,71 @@
-// controllers/CorridaController.js
-const { Corrida } = require('../models');
+const Corrida = require('../models/corridaModel');
 
-const chamarCorrida = async (req, res) => {
-  const { passageiroCpf, origem, destino, valor } = req.body;
-
+exports.chamarCorrida = async (req, res) => {
   try {
-    const nova = await Corrida.create({
-      passageiroCpf,
-      origem,
-      destino,
-      valor
+    const corrida = new Corrida({
+      passageiroId: req.usuarioId,
+      ...req.body,
     });
-
-    return res.status(201).json({ mensagem: 'Corrida solicitada.', corrida: nova });
-  } catch (erro) {
-    console.error('Erro ao chamar corrida:', erro);
-    res.status(500).json({ erro: 'Erro ao solicitar corrida.' });
-  }
-};
-
-const aceitarCorrida = async (req, res) => {
-  const { corridaId } = req.params;
-  const { motoristaCpf } = req.body;
-
-  try {
-    const corrida = await Corrida.findByPk(corridaId);
-
-    if (!corrida || corrida.status !== 'aguardando') {
-      return res.status(400).json({ erro: 'Corrida indisponível.' });
-    }
-
-    corrida.motoristaCpf = motoristaCpf;
-    corrida.status = 'aceita';
     await corrida.save();
-
-    return res.json({ mensagem: 'Corrida aceita.', corrida });
-  } catch (erro) {
-    console.error('Erro ao aceitar corrida:', erro);
-    res.status(500).json({ erro: 'Erro ao aceitar corrida.' });
+    res.status(201).json(corrida);
+  } catch (error) {
+    res.status(400).json({ erro: 'Erro ao chamar corrida', detalhes: error.message });
   }
 };
 
-const iniciarCorrida = async (req, res) => {
-  const { corridaId } = req.params;
-
+exports.corridasDisponiveis = async (req, res) => {
   try {
-    const corrida = await Corrida.findByPk(corridaId);
-
-    if (!corrida || corrida.status !== 'aceita') {
-      return res.status(400).json({ erro: 'Corrida não pode ser iniciada.' });
-    }
-
-    corrida.status = 'em_andamento';
-    await corrida.save();
-
-    return res.json({ mensagem: 'Corrida iniciada.', corrida });
-  } catch (erro) {
-    console.error('Erro ao iniciar corrida:', erro);
-    res.status(500).json({ erro: 'Erro ao iniciar corrida.' });
+    const corridas = await Corrida.find({ status: 'pendente' });
+    res.json(corridas);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar corridas' });
   }
 };
 
-const finalizarCorrida = async (req, res) => {
-  const { corridaId } = req.params;
-  const { notaPassageiro, notaMotorista } = req.body;
-
+exports.aceitarCorrida = async (req, res) => {
   try {
-    const corrida = await Corrida.findByPk(corridaId);
-
-    if (!corrida || corrida.status !== 'em_andamento') {
-      return res.status(400).json({ erro: 'Corrida não pode ser finalizada.' });
-    }
-
-    corrida.status = 'finalizada';
-    corrida.notaPassageiro = notaPassageiro;
-    corrida.notaMotorista = notaMotorista;
-    await corrida.save();
-
-    return res.json({ mensagem: 'Corrida finalizada.', corrida });
-  } catch (erro) {
-    console.error('Erro ao finalizar corrida:', erro);
-    res.status(500).json({ erro: 'Erro ao finalizar corrida.' });
+    const corrida = await Corrida.findByIdAndUpdate(
+      req.params.id,
+      { motoristaId: req.usuarioId, status: 'aceita' },
+      { new: true }
+    );
+    res.json(corrida);
+  } catch (error) {
+    res.status(400).json({ erro: 'Erro ao aceitar corrida' });
   }
 };
 
-const listarCorridas = async (req, res) => {
+exports.iniciarCorrida = async (req, res) => {
   try {
-    const corridas = await Corrida.findAll({ order: [['data', 'DESC']] });
-    return res.json(corridas);
-  } catch (erro) {
-    console.error('Erro ao listar corridas:', erro);
-    res.status(500).json({ erro: 'Erro ao listar corridas.' });
+    const corrida = await Corrida.findByIdAndUpdate(
+      req.params.id,
+      { status: 'em_andamento', dataHoraInicio: new Date() },
+      { new: true }
+    );
+    res.json(corrida);
+  } catch (error) {
+    res.status(400).json({ erro: 'Erro ao iniciar corrida' });
   }
 };
 
-module.exports = {
-  chamarCorrida,
-  aceitarCorrida,
-  iniciarCorrida,
-  finalizarCorrida,
-  listarCorridas
+exports.finalizarCorrida = async (req, res) => {
+  try {
+    const corrida = await Corrida.findByIdAndUpdate(
+      req.params.id,
+      { status: 'finalizada', dataHoraFim: new Date() },
+      { new: true }
+    );
+    res.json(corrida);
+  } catch (error) {
+    res.status(400).json({ erro: 'Erro ao finalizar corrida' });
+  }
+};
+
+exports.corridasEmAndamento = async (req, res) => {
+  try {
+    const corridas = await Corrida.find({ motoristaId: req.usuarioId, status: 'em_andamento' });
+    res.json(corridas);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar corridas em andamento' });
+  }
 };
