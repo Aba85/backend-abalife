@@ -12,3 +12,4 @@ router.post('/atualizar', authMiddleware, pagamentoController.atualizarFormaPaga
 router.get('/consultar', authMiddleware, pagamentoController.consultarFormaPagamento);
 
 module.exports = router;
+

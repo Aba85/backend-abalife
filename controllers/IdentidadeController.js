@@ -1,5 +1,5 @@
 // controllers/IdentidadeController.js
-const { Corrida } = require('../models');
+const { PrismaClient } = require('@prisma/client');
 
 const confirmarIdentidade = async (req, res) => {
   const { corridaId, motoristaCpf, confirmado } = req.body;
@@ -22,3 +22,4 @@ const confirmarIdentidade = async (req, res) => {
 };
 
 module.exports = { confirmarIdentidade };
+

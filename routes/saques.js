@@ -8,3 +8,4 @@ router.post('/solicitar', autenticar, saqueController.solicitarSaque);
 router.get('/historico', autenticar, saqueController.historicoSaques);
 
 module.exports = router;
+

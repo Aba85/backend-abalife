@@ -1,4 +1,4 @@
-const { Usuario } = require('../models');
+const { Usuario } = require('../prisma/client');
 
 module.exports = {
   async gerarCodigo(req, res) {
@@ -18,3 +18,4 @@ module.exports = {
     }
   }
 };
+

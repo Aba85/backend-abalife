@@ -1,12 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const RecompensaController = require('../controllers/RecompensaController');
-const auth = require('../middleware/auth');
+const recompensaController = require('../controllers/recompensaController');
 
-// Consulta do status de recompensas
-router.get('/status', auth, RecompensaController.statusRecompensas);
-
-// Histórico de recompensas recebidas
-router.get('/historico', auth, RecompensaController.historicoRecompensas);
+router.get('/passageiro/:usuarioId', recompensaController.recompensasPassageiro);
 
 module.exports = router;

@@ -7,3 +7,4 @@ router.post('/corridas/agendar', auth, CorridaAgendadaController.agendarCorrida)
 router.get('/corridas/agendadas', auth, CorridaAgendadaController.listarCorridasAgendadas);
 
 module.exports = router;
+

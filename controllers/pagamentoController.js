@@ -1,6 +1,6 @@
 // caminho: controllers/pagamentoController.js
 
-const Usuario = require('../models/Usuario');
+const Usuario = require('../prisma/client/Usuario');
 
 // Atualizar forma de pagamento
 exports.atualizarFormaPagamento = async (req, res) => {
@@ -52,3 +52,4 @@ exports.consultarFormaPagamento = async (req, res) => {
     res.status(500).json({ mensagem: 'Erro ao consultar forma de pagamento' });
   }
 };
+

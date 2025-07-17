@@ -6,3 +6,4 @@ const auth = require('../middleware/auth');
 router.get('/gerar', auth, CodigoController.gerarCodigo);
 
 module.exports = router;
+

@@ -22,3 +22,4 @@ const roleMiddleware = (rolePermitido) => {
 };
 
 module.exports = roleMiddleware;
+

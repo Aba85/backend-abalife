@@ -1,38 +1,49 @@
-const mongoose = require('mongoose');
+module.exports = (sequelize, DataTypes) => {
+  const Corrida = sequelize.define('Corrida', {
+    passageiro_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    motorista_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    origem: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    destino: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    valor: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
+    dataHora: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    personalizada: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    agendada: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    codigo_motorista_personalizado: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  }, {
+    tableName: 'corridas',
+    timestamps: true,
+  });
 
-const corridaSchema = new mongoose.Schema({
-  passageiroId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario',
-    required: true,
-  },
-  motoristaId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario',
-  },
-  origem: {
-    type: String,
-    required: true,
-  },
-  destino: {
-    type: String,
-    required: true,
-  },
-  preco: {
-    type: Number,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ['pendente', 'aceita', 'em_andamento', 'finalizada'],
-    default: 'pendente',
-  },
-  dataHoraChamada: {
-    type: Date,
-    default: Date.now,
-  },
-  dataHoraInicio: Date,
-  dataHoraFim: Date,
-});
-
-module.exports = mongoose.model('Corrida', corridaSchema);
+  return Corrida;
+};

@@ -6,3 +6,4 @@ const auth = require('../middleware/auth');
 router.post('/corridas/identidade', auth, IdentidadeController.confirmarIdentidade);
 
 module.exports = router;
+

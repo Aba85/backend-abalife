@@ -1,12 +1,33 @@
-// caminho: models/Recompensa.js
+module.exports = (sequelize, DataTypes) => {
+  const Recompensa = sequelize.define('Recompensa', {
+    indicante_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    indicado_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    corrida_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    valor: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
+    tipo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    data: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+  }, {
+    tableName: 'recompensas',
+    timestamps: true,
+  });
 
-const mongoose = require('mongoose');
-
-const recompensaSchema = new mongoose.Schema({
-  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
-  descricao: { type: String, required: true },
-  valor: { type: Number, required: true },
-  data: { type: Date, default: Date.now },
-});
-
-module.exports = mongoose.model('Recompensa', recompensaSchema);
+  return Recompensa;
+};

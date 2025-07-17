@@ -1,6 +1,6 @@
 // controllers/SaqueController.js
 
-const { Saque, Usuario } = require('../models');
+const { Saque, Usuario } = require('../prisma/client');
 const { Op } = require('sequelize');
 
 const regras = {
@@ -88,3 +88,4 @@ module.exports = {
     }
   },
 };
+

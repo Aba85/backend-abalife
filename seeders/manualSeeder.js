@@ -1,6 +1,6 @@
 // seeders/manualSeeder.js
 const bcrypt = require('bcryptjs');
-const db = require('../models');
+const db = require('../prisma/client');
 
 async function seed() {
   await db.sequelize.sync({ force: true });
@@ -39,3 +39,4 @@ async function seed() {
 }
 
 seed();
+

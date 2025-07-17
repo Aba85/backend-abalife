@@ -1,113 +1,55 @@
-const db = require('../models');
+const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { validarCPF, validarTelefone, validarSenha } = require('../validators');
+const prisma = new PrismaClient();
 
-const Usuario = db.usuarios;
+exports.cadastrarUsuario = async (req, res) => {
+  const { nome, email, senha, cpf, celular, endereco } = req.body;
 
-exports.registrar = async (req, res) => {
   try {
-    const {
-      nome,
-      email,
-      cpf,
-      telefone,
-      senha,
-      confirmarSenha,
-      tipo,
-    } = req.body;
+    const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-    if (!validarCPF(cpf)) {
-      return res.status(400).json({ mensagem: 'CPF inválido.' });
-    }
-
-    if (!validarTelefone(telefone)) {
-      return res.status(400).json({ mensagem: 'Telefone inválido. Ex: 71999999999' });
-    }
-
-    const resultadoSenha = validarSenha(senha, confirmarSenha);
-    if (!resultadoSenha.valido) {
-      return res.status(400).json({ mensagem: resultadoSenha.mensagem });
-    }
-
-    const usuarioExistente = await Usuario.findOne({
-      where: {
-        [db.Sequelize.Op.or]: [
-          { email },
-          { cpf },
-          { telefone }
-        ]
-      }
+    const novoUsuario = await prisma.usuario.create({
+      data: {
+        nome,
+        email,
+        senha: senhaCriptografada,
+        cpf,
+        celular,
+        endereco,
+      },
     });
 
-    if (usuarioExistente) {
-      return res.status(400).json({ mensagem: 'Usuário com esse e-mail, CPF ou telefone já existe.' });
-    }
-
-    const senhaHash = await bcrypt.hash(senha, 10);
-
-    const novoUsuario = await Usuario.create({
-      nome,
-      email,
-      cpf,
-      telefone,
-      senha: senhaHash,
-      tipo,
-    });
-
-    return res.status(201).json({ mensagem: 'Usuário registrado com sucesso.', usuario: novoUsuario });
+    res.status(201).json(novoUsuario);
   } catch (error) {
-    console.error('Erro ao registrar usuário:', error);
-    return res.status(500).json({ mensagem: 'Erro interno no servidor.' });
+    console.error('Erro ao cadastrar usuário:', error);
+    res.status(500).json({ erro: 'Erro ao cadastrar usuário' });
   }
 };
 
-exports.login = async (req, res) => {
+exports.loginUsuario = async (req, res) => {
+  const { email, senha } = req.body;
+
   try {
-    const { cpf, telefone, senha } = req.body;
-
-    if (!cpf && !telefone) {
-      return res.status(400).json({ mensagem: 'Informe o CPF ou o telefone para login.' });
-    }
-
-    const usuario = await Usuario.findOne({
-      where: {
-        [db.Sequelize.Op.or]: [
-          cpf ? { cpf } : null,
-          telefone ? { telefone } : null
-        ].filter(Boolean)
-      }
-    });
+    const usuario = await prisma.usuario.findUnique({ where: { email } });
 
     if (!usuario) {
-      return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
+      return res.status(404).json({ erro: 'Usuário não encontrado' });
     }
 
     const senhaValida = await bcrypt.compare(senha, usuario.senha);
+
     if (!senhaValida) {
-      return res.status(401).json({ mensagem: 'Senha incorreta.' });
+      return res.status(401).json({ erro: 'Senha incorreta' });
     }
 
-    const token = jwt.sign(
-      { id: usuario.id, tipo: usuario.tipo },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    return res.status(200).json({
-      mensagem: 'Login realizado com sucesso.',
-      token,
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        cpf: usuario.cpf,
-        telefone: usuario.telefone,
-        tipo: usuario.tipo
-      }
+    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
     });
+
+    res.json({ token, usuario });
   } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    return res.status(500).json({ mensagem: 'Erro interno no servidor.' });
+    console.error('Erro no login:', error);
+    res.status(500).json({ erro: 'Erro no login' });
   }
 };

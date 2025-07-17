@@ -13,3 +13,4 @@ router.get('/codigo', auth, IndicacaoController.meuCodigoIndicacao);
 router.get('/meus-indicados', auth, IndicacaoController.listarIndicados);
 
 module.exports = router;
+

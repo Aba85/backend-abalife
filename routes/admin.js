@@ -11,3 +11,4 @@ router.get('/saques', auth, adminOnly, AdminController.listarTodosSaques);
 router.get('/indicacoes', auth, adminOnly, AdminController.listarTodasIndicacoes);
 
 module.exports = router;
+

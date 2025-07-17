@@ -1,4 +1,4 @@
-const { Usuario, Indicacao } = require('../models');
+const { Usuario, Indicacao } = require('../prisma/client');
 
 const registrarIndicacao = async (req, res) => {
   const { codigoIndicante } = req.body;
@@ -43,3 +43,4 @@ const registrarIndicacao = async (req, res) => {
 module.exports = {
   registrarIndicacao,
 };
+

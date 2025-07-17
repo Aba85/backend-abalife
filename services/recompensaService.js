@@ -1,4 +1,4 @@
-const db = require('../models');
+const db = require('../prisma/client');
 const { Op } = require('sequelize');
 
 async function calcularRecompensaPassageiro(usuarioId) {
@@ -43,3 +43,4 @@ module.exports = {
   calcularRecompensaPassageiro,
   gerarRecompensaPorIndicacao
 };
+
