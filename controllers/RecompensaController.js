@@ -1,110 +1,64 @@
-const { Recompensa, Usuario, Saque } = require('../models');
-const { Op } = require('sequelize');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-const listarHistorico = async (req, res) => {
-  try {
-    const historico = await Recompensa.findAll({
-      where: { usuarioId: req.usuario.id },
-      order: [['createdAt', 'DESC']],
-    });
-
-    res.status(200).json(historico);
-  } catch (error) {
-    console.error('Erro ao listar recompensas:', error);
-    res.status(500).json({ erro: 'Erro interno ao buscar recompensas.' });
-  }
-};
-
-const solicitarSaque = async (req, res) => {
-  const { valor } = req.body;
-  const usuario = await Usuario.findByPk(req.usuario.id);
+exports.recompensasPassageiro = async (req, res) => {
+  const { usuarioId } = req.params;
 
   try {
-    const saldoDisponivel = await Recompensa.sum('valor', {
-      where: {
-        usuarioId: usuario.id,
-        status: 'disponivel'
-      }
-    });
-
-    if (!saldoDisponivel || valor > saldoDisponivel) {
-      return res.status(400).json({ erro: 'Saldo insuficiente.' });
-    }
-
-    // Validação de regras específicas
-    const hoje = new Date();
-    const dataInicio = new Date();
-    let limiteValor = 0;
-    let limiteData = null;
-
-    if (usuario.perfil === 'passageiro') {
-      limiteValor = 50;
-      dataInicio.setDate(hoje.getDate() - 7);
-      limiteData = await Saque.findOne({
-        where: {
-          usuarioId: usuario.id,
-          createdAt: { [Op.gte]: dataInicio },
-        },
-      });
-      if (limiteData) {
-        return res.status(400).json({ erro: 'Você só pode sacar uma vez por semana.' });
-      }
-    }
-
-    if (usuario.perfil === 'motorista') {
-      limiteValor = 10;
-      dataInicio.setDate(hoje.getDate() - 1);
-      limiteData = await Saque.findOne({
-        where: {
-          usuarioId: usuario.id,
-          createdAt: { [Op.gte]: dataInicio },
-        },
-      });
-      if (limiteData) {
-        return res.status(400).json({ erro: 'Você já solicitou um saque hoje.' });
-      }
-    }
-
-    if (valor < limiteValor) {
-      return res.status(400).json({ erro: `Valor mínimo para saque: R$ ${limiteValor.toFixed(2)}` });
-    }
-
-    // Registrar saque
-    await Saque.create({
-      usuarioId: usuario.id,
-      valor,
-    });
-
-    // Atualizar recompensas como sacadas
-    const recompensas = await Recompensa.findAll({
-      where: {
-        usuarioId: usuario.id,
-        status: 'disponivel'
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: parseInt(usuarioId) },
+      include: {
+        corridas: true,
+        indicados: true,
       },
-      order: [['createdAt', 'ASC']],
     });
 
-    let restante = valor;
-    for (const rec of recompensas) {
-      if (restante <= 0) break;
-
-      if (rec.valor <= restante) {
-        await rec.update({ status: 'resgatado' });
-        restante -= rec.valor;
-      } else {
-        await rec.update({ valor: rec.valor - restante });
-        restante = 0;
-      }
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    res.status(200).json({ mensagem: 'Saque solicitado com sucesso.' });
-  } catch (error) {
-    console.error('Erro ao solicitar saque:', error);
-    res.status(500).json({ erro: 'Erro interno ao solicitar saque.' });
-  }
-};
+    const corridas30dias = usuario.corridas.filter((c) => {
+      const dias = (new Date() - new Date(c.criadaEm)) / (1000 * 60 * 60 * 24);
+      return dias <= 30;
+    });
 
-module.exports = {
-  listarHistorico,
-  solicitarSaque,
+    const elegivel = corridas30dias.length > 0 && usuario.notaMedia >= 4.7;
+
+    let valorPorCorrida = 0;
+    switch (corridas30dias.length) {
+      case 1:
+        valorPorCorrida = 0.15;
+        break;
+      case 2:
+        valorPorCorrida = 0.25;
+        break;
+      case 3:
+        valorPorCorrida = 0.35;
+        break;
+      default:
+        if (corridas30dias.length >= 4) valorPorCorrida = 0.5;
+        break;
+    }
+
+    const totalCorridasIndicados = await prisma.corrida.count({
+      where: {
+        usuarioId: {
+          in: usuario.indicados.map((i) => i.id),
+        },
+        status: 'FINALIZADA',
+      },
+    });
+
+    const totalRecompensa = valorPorCorrida * totalCorridasIndicados;
+
+    return res.status(200).json({
+      elegivel,
+      valorPorCorrida,
+      totalCorridasIndicados,
+      totalRecompensa,
+    });
+  } catch (error) {
+    console.error('Erro ao calcular recompensas:', error);
+    return res.status(500).json({ error: 'Erro ao calcular recompensas' });
+  }
 };

@@ -13,3 +13,4 @@ router.post('/saque', auth, WalletController.solicitarSaque);
 router.get('/transacoes', auth, WalletController.historicoTransacoes);
 
 module.exports = router;
+

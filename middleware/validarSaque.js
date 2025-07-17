@@ -1,6 +1,6 @@
 // middlewares/validarSaque.js
 
-const { Saque } = require('../models');
+const { Saque } = require('../prisma/client');
 const { Op } = require('sequelize');
 
 module.exports = async function validarSaque(req, res, next) {
@@ -32,3 +32,4 @@ module.exports = async function validarSaque(req, res, next) {
 
   next();
 };
+

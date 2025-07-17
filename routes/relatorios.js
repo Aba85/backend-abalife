@@ -6,3 +6,4 @@ const auth = require('../middleware/auth');
 router.get('/recompensas', auth, RelatorioController.historico);
 
 module.exports = router;
+

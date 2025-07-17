@@ -8,3 +8,4 @@ router.get('/saldo', autenticar, carteiraController.consultarSaldo);
 router.post('/usar', autenticar, carteiraController.usarSaldo);
 
 module.exports = router;
+

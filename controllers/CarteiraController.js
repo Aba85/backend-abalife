@@ -1,5 +1,5 @@
 // controllers/CarteiraController.js
-const { Carteira, Saque, Usuario } = require('../models');
+const { Carteira, Saque, Usuario } = require('../prisma/client');
 const { Op } = require('sequelize');
 
 module.exports = {
@@ -105,3 +105,4 @@ module.exports = {
     }
   }
 };
+

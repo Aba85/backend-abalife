@@ -1,5 +1,5 @@
 // controllers/CorridaAgendadaController.js
-const { CorridaAgendada } = require('../models');
+const { PrismaClient } = require('@prisma/client');
 
 const agendarCorrida = async (req, res) => {
   const { passageiroCpf, origem, destino, dataHoraAgendada, tipo, valor, motoristaCpf } = req.body;
@@ -36,3 +36,4 @@ module.exports = {
   agendarCorrida,
   listarCorridasAgendadas
 };
+

@@ -1,6 +1,6 @@
 // caminho: controllers/cadastroController.js
 
-const Usuario = require('../models/usuario');
+const Usuario = require('../prisma/client/usuario');
 const bcrypt = require('bcrypt');
 const { gerarCodigoUnico } = require('../utils/geradorCodigo');
 const validarCPF = require('../utils/cpfValidator');
@@ -93,3 +93,4 @@ exports.verificarCodigoSMS = (req, res) => {
   codigosSMS.delete(celular);
   res.json({ mensagem: 'Verificação bem-sucedida' });
 };
+
