@@ -1,0 +1,691 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BairroPrioridades {
+  id              Int                                     @id @default(autoincrement())
+  nome            String                                  @db.VarChar(255)
+  cidade          String                                  @db.VarChar(255)
+  estado          String                                  @db.VarChar(255)
+  ativo           Boolean?                                @default(true)
+  tipo_prioridade enum_BairroPrioridades_tipo_prioridade?
+  createdAt       DateTime                                @db.Timestamptz(6)
+  updatedAt       DateTime                                @db.Timestamptz(6)
+}
+
+model Carteiras {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  saldo     Decimal? @default(0) @db.Decimal(10, 2)
+  createdAt DateTime @db.Timestamptz(6)
+  updatedAt DateTime @db.Timestamptz(6)
+}
+
+model CodigoIndicacaos {
+  id        Int      @id @default(autoincrement())
+  codigo    String   @unique @db.VarChar(255)
+  usuarioId Int
+  createdAt DateTime @db.Timestamptz(6)
+  updatedAt DateTime @db.Timestamptz(6)
+}
+
+model CorridaAgendadas {
+  id               Int      @id @default(autoincrement())
+  passageiroCpf    String   @db.VarChar(255)
+  motoristaCpf     String?  @db.VarChar(255)
+  origem           String   @db.VarChar(255)
+  destino          String   @db.VarChar(255)
+  dataHoraAgendada DateTime @db.Timestamptz(6)
+  status           String?  @default("pendente") @db.VarChar(255)
+  tipo             String   @db.VarChar(255)
+  valor            Float?
+  createdAt        DateTime @db.Timestamptz(6)
+  updatedAt        DateTime @db.Timestamptz(6)
+}
+
+model Corridas {
+  id              Int                 @id @default(autoincrement())
+  origem          String?             @db.VarChar(255)
+  destino         String?             @db.VarChar(255)
+  status          String?             @db.VarChar(255)
+  valor           Decimal?            @db.Decimal
+  tipo            enum_Corridas_tipo?
+  horarioAgendado DateTime?           @db.Timestamptz(6)
+  usuarioId       Int?
+  createdAt       DateTime            @db.Timestamptz(6)
+  updatedAt       DateTime            @db.Timestamptz(6)
+}
+
+model Denuncia {
+  id        Int                     @id @default(autoincrement())
+  autor_id  Int
+  alvo_id   Int
+  tipo_alvo enum_Denuncia_tipo_alvo
+  createdAt DateTime                @db.Timestamptz(6)
+  updatedAt DateTime                @db.Timestamptz(6)
+}
+
+model Documentos {
+  id             Int                            @id @default(autoincrement())
+  usuario_id     Int
+  tipo_documento enum_Documentos_tipo_documento
+  createdAt      DateTime                       @db.Timestamptz(6)
+  updatedAt      DateTime                       @db.Timestamptz(6)
+}
+
+model EmailEnviados {
+  id         Int                      @id @default(autoincrement())
+  usuario_id Int
+  email      String                   @db.VarChar(255)
+  tipo       enum_EmailEnviados_tipo?
+  createdAt  DateTime                 @db.Timestamptz(6)
+  updatedAt  DateTime                 @db.Timestamptz(6)
+}
+
+model HistoricoIndicacaos {
+  id           Int                            @id @default(autoincrement())
+  indicador_id Int
+  indicado_id  Int
+  tipo         enum_HistoricoIndicacaos_tipo?
+  createdAt    DateTime                       @db.Timestamptz(6)
+  updatedAt    DateTime                       @db.Timestamptz(6)
+}
+
+model HistoricoSelfies {
+  id         Int                         @id @default(autoincrement())
+  usuario_id Int
+  tipo       enum_HistoricoSelfies_tipo?
+  createdAt  DateTime                    @db.Timestamptz(6)
+  updatedAt  DateTime                    @db.Timestamptz(6)
+}
+
+model Identidades {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @db.Timestamptz(6)
+  updatedAt DateTime @db.Timestamptz(6)
+}
+
+model Indicacaos {
+  id                                        Int      @id @default(autoincrement())
+  indicanteId                               Int
+  indicadoId                                Int
+  createdAt                                 DateTime @db.Timestamptz(6)
+  updatedAt                                 DateTime @db.Timestamptz(6)
+  Usuarios_Indicacaos_indicadoIdToUsuarios  Usuarios @relation("Indicacaos_indicadoIdToUsuarios", fields: [indicadoId], references: [id], onDelete: NoAction)
+  Usuarios_Indicacaos_indicanteIdToUsuarios Usuarios @relation("Indicacaos_indicanteIdToUsuarios", fields: [indicanteId], references: [id], onDelete: NoAction)
+}
+
+model LogAcessos {
+  id           Int                           @id @default(autoincrement())
+  usuario_id   Int
+  tipo_usuario enum_LogAcessos_tipo_usuario?
+  createdAt    DateTime                      @db.Timestamptz(6)
+  updatedAt    DateTime                      @db.Timestamptz(6)
+}
+
+model MensagemSuportes {
+  id           Int                                 @id @default(autoincrement())
+  usuario_id   Int
+  tipo_usuario enum_MensagemSuportes_tipo_usuario?
+  createdAt    DateTime                            @db.Timestamptz(6)
+  updatedAt    DateTime                            @db.Timestamptz(6)
+}
+
+model Recompensas {
+  id        Int                      @id @default(autoincrement())
+  usuarioId Int
+  descricao String                   @db.VarChar(255)
+  valor     Float
+  status    enum_Recompensas_status? @default(disponivel)
+  createdAt DateTime                 @db.Timestamptz(6)
+  updatedAt DateTime                 @db.Timestamptz(6)
+  Usuarios  Usuarios                 @relation(fields: [usuarioId], references: [id], onDelete: NoAction)
+}
+
+model Saques {
+  id        Int                 @id @default(autoincrement())
+  usuarioId Int
+  valor     Decimal             @db.Decimal(10, 2)
+  status    enum_Saques_status? @default(pendente)
+  tipo      enum_Saques_tipo
+  createdAt DateTime            @db.Timestamptz(6)
+  updatedAt DateTime            @db.Timestamptz(6)
+  Usuarios  Usuarios            @relation(fields: [usuarioId], references: [id], onDelete: NoAction)
+}
+
+/// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model SequelizeMeta {
+// }
+
+model Transacaos {
+  id         Int                  @id @default(autoincrement())
+  usuario_id Int
+  tipo       enum_Transacaos_tipo
+  valor      Float
+  data       DateTime             @db.Timestamptz(6)
+  createdAt  DateTime             @db.Timestamptz(6)
+  updatedAt  DateTime             @db.Timestamptz(6)
+  Usuarios   Usuarios             @relation(fields: [usuario_id], references: [id], onDelete: NoAction)
+}
+
+model Usuarios {
+  id                                          Int           @id @default(autoincrement())
+  nome                                        String        @db.VarChar(255)
+  email                                       String        @unique @db.VarChar(255)
+  cpf                                         String?       @db.VarChar(11)
+  createdAt                                   DateTime      @db.Timestamptz(6)
+  updatedAt                                   DateTime      @db.Timestamptz(6)
+  Indicacaos_Indicacaos_indicadoIdToUsuarios  Indicacaos[]  @relation("Indicacaos_indicadoIdToUsuarios")
+  Indicacaos_Indicacaos_indicanteIdToUsuarios Indicacaos[]  @relation("Indicacaos_indicanteIdToUsuarios")
+  Recompensas                                 Recompensas[]
+  Saques                                      Saques[]
+  Transacaos                                  Transacaos[]
+}
+
+model Veiculos {
+  id           Int                      @id @default(autoincrement())
+  motorista_id Int
+  modelo       String                   @db.VarChar(255)
+  placa        String                   @unique @db.VarChar(255)
+  ano          Int
+  categoria    enum_Veiculos_categoria?
+  createdAt    DateTime                 @db.Timestamptz(6)
+  updatedAt    DateTime                 @db.Timestamptz(6)
+}
+
+model agenda_corridas {
+  id               Int                            @id @default(autoincrement())
+  passageiro_id    Int
+  categoria        enum_agenda_corridas_categoria
+  endereco_origem  String                         @db.VarChar(255)
+  endereco_destino String                         @db.VarChar(255)
+  data_hora        DateTime                       @db.Timestamptz(6)
+  status           enum_agenda_corridas_status?   @default(pendente)
+  motorista_id     Int?
+  valor_previsto   Float?
+  createdAt        DateTime                       @db.Timestamptz(6)
+  updatedAt        DateTime                       @db.Timestamptz(6)
+}
+
+model avaliacoes {
+  id           Int                  @id @default(autoincrement())
+  avaliador_id Int
+  avaliado_id  Int
+  tipo         enum_avaliacoes_tipo
+  nota         Float
+  comentario   String?
+  createdAt    DateTime             @db.Timestamptz(6)
+  updatedAt    DateTime             @db.Timestamptz(6)
+}
+
+model bairros_prioridade {
+  id              Int                                     @id @default(autoincrement())
+  nome            String                                  @db.VarChar(255)
+  cidade          String                                  @db.VarChar(255)
+  estado          String                                  @db.VarChar(255)
+  ativo           Boolean?                                @default(true)
+  tipo_prioridade enum_bairros_prioridade_tipo_prioridade
+  observacoes     String?
+  createdAt       DateTime                                @db.Timestamptz(6)
+  updatedAt       DateTime                                @db.Timestamptz(6)
+}
+
+model carteiras {
+  id                 Int                 @id @default(autoincrement())
+  usuario_id         Int
+  tipo               enum_carteiras_tipo
+  saldo              Float               @default(0)
+  ultima_atualizacao DateTime?           @db.Timestamptz(6)
+  createdAt          DateTime            @db.Timestamptz(6)
+  updatedAt          DateTime            @db.Timestamptz(6)
+}
+
+model corridas {
+  id              Int                           @id @default(autoincrement())
+  id_motorista    Int
+  id_passageiro   Int
+  origem          String                        @db.VarChar(255)
+  destino         String                        @db.VarChar(255)
+  status          enum_corridas_status?         @default(pendente)
+  distancia_km    Float
+  valor_total     Float
+  forma_pagamento enum_corridas_forma_pagamento
+  data_hora       DateTime?                     @db.Timestamptz(6)
+  createdAt       DateTime                      @db.Timestamptz(6)
+  updatedAt       DateTime                      @db.Timestamptz(6)
+}
+
+model denuncias {
+  id            Int                      @id @default(autoincrement())
+  autor_id      Int
+  alvo_id       Int
+  tipo_alvo     enum_denuncias_tipo_alvo
+  corrida_id    Int?
+  motivo        String                   @db.VarChar(255)
+  descricao     String?
+  status        enum_denuncias_status?   @default(pendente)
+  data_denuncia DateTime?                @db.Timestamptz(6)
+  createdAt     DateTime                 @db.Timestamptz(6)
+  updatedAt     DateTime                 @db.Timestamptz(6)
+}
+
+model documentos {
+  id              Int                            @id @default(autoincrement())
+  usuario_id      Int
+  tipo_documento  enum_documentos_tipo_documento
+  arquivo_url     String                         @db.VarChar(255)
+  status          enum_documentos_status?        @default(pendente)
+  motivo_rejeicao String?                        @db.VarChar(255)
+  data_envio      DateTime?                      @db.Timestamptz(6)
+  createdAt       DateTime                       @db.Timestamptz(6)
+  updatedAt       DateTime                       @db.Timestamptz(6)
+}
+
+model emails_enviados {
+  id           Int                                @id @default(autoincrement())
+  usuario_id   Int
+  email        String                             @db.VarChar(255)
+  tipo         enum_emails_enviados_tipo
+  titulo       String                             @db.VarChar(255)
+  conteudo     String?
+  status_envio enum_emails_enviados_status_envio? @default(pendente)
+  data_envio   DateTime?                          @db.Timestamptz(6)
+  createdAt    DateTime                           @db.Timestamptz(6)
+  updatedAt    DateTime                           @db.Timestamptz(6)
+}
+
+model historico_indicacoes {
+  id               Int                            @id @default(autoincrement())
+  indicador_id     Int
+  indicado_id      Int
+  tipo             enum_historico_indicacoes_tipo
+  data_vinculo     DateTime?                      @db.Timestamptz(6)
+  codigo_utilizado String?                        @db.VarChar(255)
+  ativo            Boolean?                       @default(true)
+  createdAt        DateTime                       @db.Timestamptz(6)
+  updatedAt        DateTime                       @db.Timestamptz(6)
+}
+
+model historico_selfies {
+  id           Int                               @id @default(autoincrement())
+  usuario_id   Int
+  tipo         enum_historico_selfies_tipo
+  imagem_url   String                            @db.VarChar(255)
+  resultado    enum_historico_selfies_resultado? @default(pendente)
+  motivo_falha String?                           @db.VarChar(255)
+  data_envio   DateTime?                         @db.Timestamptz(6)
+  createdAt    DateTime                          @db.Timestamptz(6)
+  updatedAt    DateTime                          @db.Timestamptz(6)
+}
+
+model logs_acesso {
+  id           Int                           @id @default(autoincrement())
+  usuario_id   Int
+  tipo_usuario enum_logs_acesso_tipo_usuario
+  acao         String                        @db.VarChar(255)
+  descricao    String?                       @db.VarChar(255)
+  ip           String?                       @db.VarChar(255)
+  dispositivo  String?                       @db.VarChar(255)
+  data         DateTime?                     @db.Timestamptz(6)
+  createdAt    DateTime                      @db.Timestamptz(6)
+  updatedAt    DateTime                      @db.Timestamptz(6)
+}
+
+model mensagens_suporte {
+  id               Int                                 @id @default(autoincrement())
+  usuario_id       Int
+  tipo_usuario     enum_mensagens_suporte_tipo_usuario
+  mensagem         String
+  resposta_sistema Boolean?                            @default(false)
+  status           enum_mensagens_suporte_status?      @default(aberto)
+  data_envio       DateTime?                           @db.Timestamptz(6)
+  createdAt        DateTime                            @db.Timestamptz(6)
+  updatedAt        DateTime                            @db.Timestamptz(6)
+}
+
+model pagamentos_pessoais {
+  id              Int       @id @default(autoincrement())
+  motorista_id    Int
+  passageiro_id   Int
+  valor           Float
+  valor_maximo    Float
+  aceito_pelo_app Boolean?  @default(true)
+  data_corrida    DateTime? @db.Timestamptz(6)
+  createdAt       DateTime  @db.Timestamptz(6)
+  updatedAt       DateTime  @db.Timestamptz(6)
+}
+
+model paradas {
+  id           Int      @id @default(autoincrement())
+  corrida_id   Int
+  ordem        Int
+  endereco     String   @db.VarChar(255)
+  latitude     Float?
+  longitude    Float?
+  tempo_espera Int?     @default(5)
+  createdAt    DateTime @db.Timestamptz(6)
+  updatedAt    DateTime @db.Timestamptz(6)
+}
+
+model recompensas {
+  id                 Int                      @id @default(autoincrement())
+  indicador_id       Int
+  indicado_id        Int
+  tipo               enum_recompensas_tipo
+  valor              Float
+  status             enum_recompensas_status? @default(pendente)
+  data_gerada        DateTime?                @db.Timestamptz(6)
+  referencia_corrida Int?
+  createdAt          DateTime                 @db.Timestamptz(6)
+  updatedAt          DateTime                 @db.Timestamptz(6)
+}
+
+model saques {
+  id          Int                 @id @default(autoincrement())
+  usuario_id  Int
+  valor       Float
+  status      enum_saques_status? @default(pendente)
+  tipo        enum_saques_tipo
+  pix         String              @db.VarChar(255)
+  data_pedido DateTime?           @db.Timestamptz(6)
+  createdAt   DateTime            @db.Timestamptz(6)
+  updatedAt   DateTime            @db.Timestamptz(6)
+}
+
+model transacoes {
+  id             Int                    @id @default(autoincrement())
+  usuario_id     Int
+  tipo           enum_transacoes_tipo
+  origem         enum_transacoes_origem
+  descricao      String?                @db.VarChar(255)
+  valor          Float
+  data_transacao DateTime?              @db.Timestamptz(6)
+  createdAt      DateTime               @db.Timestamptz(6)
+  updatedAt      DateTime               @db.Timestamptz(6)
+}
+
+model usuarios {
+  id        Int                @id @default(autoincrement())
+  nome      String             @db.VarChar(255)
+  tipo      enum_usuarios_tipo
+  email     String?            @unique @db.VarChar(255)
+  senha     String             @db.VarChar(255)
+  createdAt DateTime           @db.Timestamptz(6)
+  updatedAt DateTime           @db.Timestamptz(6)
+}
+
+model veiculos {
+  id           Int                     @id @default(autoincrement())
+  motorista_id Int
+  modelo       String                  @db.VarChar(255)
+  placa        String                  @unique @db.VarChar(255)
+  ano          Int
+  categoria    enum_veiculos_categoria
+  status       enum_veiculos_status?   @default(pendente)
+  observacoes  String?
+  createdAt    DateTime                @db.Timestamptz(6)
+  updatedAt    DateTime                @db.Timestamptz(6)
+}
+
+enum enum_BairroPrioridades_tipo_prioridade {
+  bonus
+  bloqueio
+  teste
+}
+
+enum enum_Corridas_tipo {
+  imediata
+  agendada
+  personalizada
+}
+
+enum enum_Denuncia_tipo_alvo {
+  motorista
+  passageiro
+}
+
+enum enum_Documentos_tipo_documento {
+  rg
+  cnh
+  comprovante_residencia
+  outro
+}
+
+enum enum_EmailEnviados_tipo {
+  cadastro
+  recuperacao_senha
+  recompensa
+  outro
+}
+
+enum enum_HistoricoIndicacaos_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_HistoricoSelfies_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_LogAcessos_tipo_usuario {
+  motorista
+  passageiro
+}
+
+enum enum_MensagemSuportes_tipo_usuario {
+  motorista
+  passageiro
+}
+
+enum enum_Recompensas_status {
+  disponivel
+  resgatado
+}
+
+enum enum_Saques_status {
+  pendente
+  processado
+  recusado
+}
+
+enum enum_Saques_tipo {
+  recompensa
+  corrida
+}
+
+enum enum_Transacaos_tipo {
+  corrida
+  recompensa
+  saque
+  ajuste
+  bonus
+}
+
+enum enum_Veiculos_categoria {
+  alpha
+  delta
+  omega
+  mala
+  entrega
+  arca
+}
+
+enum enum_agenda_corridas_categoria {
+  alpha
+  delta
+  omega
+  mala
+  entrega
+  arca
+}
+
+enum enum_agenda_corridas_status {
+  pendente
+  atribuida
+  cancelada
+  concluida
+}
+
+enum enum_avaliacoes_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_bairros_prioridade_tipo_prioridade {
+  bonus
+  bloqueio
+  teste
+}
+
+enum enum_carteiras_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_corridas_forma_pagamento {
+  dinheiro
+  pix
+  cartao
+}
+
+enum enum_corridas_status {
+  pendente
+  aceita
+  concluida
+  cancelada
+}
+
+enum enum_denuncias_status {
+  pendente
+  em_analise
+  resolvida
+}
+
+enum enum_denuncias_tipo_alvo {
+  motorista
+  passageiro
+}
+
+enum enum_documentos_status {
+  pendente
+  validado
+  rejeitado
+}
+
+enum enum_documentos_tipo_documento {
+  rg
+  cnh
+  comprovante_residencia
+  outro
+}
+
+enum enum_emails_enviados_status_envio {
+  enviado
+  erro
+  pendente
+}
+
+enum enum_emails_enviados_tipo {
+  cadastro
+  recuperacao_senha
+  recompensa
+  outro
+}
+
+enum enum_historico_indicacoes_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_historico_selfies_resultado {
+  validada
+  rejeitada
+  pendente
+}
+
+enum enum_historico_selfies_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_logs_acesso_tipo_usuario {
+  motorista
+  passageiro
+}
+
+enum enum_mensagens_suporte_status {
+  aberto
+  em_analise
+  resolvido
+}
+
+enum enum_mensagens_suporte_tipo_usuario {
+  motorista
+  passageiro
+}
+
+enum enum_recompensas_status {
+  pendente
+  liberada
+  paga
+}
+
+enum enum_recompensas_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_saques_status {
+  pendente
+  aprovado
+  recusado
+  pago
+}
+
+enum enum_saques_tipo {
+  corrida
+  recompensa
+  ambos
+}
+
+enum enum_transacoes_origem {
+  sistema
+  admin
+  indicacao
+  corrida
+  outro
+}
+
+enum enum_transacoes_tipo {
+  corrida
+  recompensa
+  saque
+  ajuste
+  bonus
+}
+
+enum enum_usuarios_tipo {
+  motorista
+  passageiro
+}
+
+enum enum_veiculos_categoria {
+  alpha
+  delta
+  omega
+  mala
+  entrega
+  arca
+}
+
+enum enum_veiculos_status {
+  ativo
+  pendente
+  reprovado
+}
