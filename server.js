@@ -13,9 +13,14 @@ const prisma = new PrismaClient();
 
 // Middlewares globais
 app.use(express.json());
-app.use(cors());
 
-// Importação das rotas (as rotas devem usar Prisma, não Sequelize)
+// CORS configurado com a origem do frontend
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+}));
+
+// Importação das rotas
 const corridasAgendadasRoutes = require('./routes/corridasAgendadas');
 const identidadeRoutes = require('./routes/identidade');
 const relatorioRoutes = require('./routes/relatorios');
