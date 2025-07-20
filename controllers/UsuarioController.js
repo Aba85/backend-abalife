@@ -29,7 +29,17 @@ exports.cadastrarUsuario = async (req, res) => {
       },
     });
 
-    res.status(201).json({ mensagem: 'Usuário cadastrado com sucesso', usuario: novoUsuario });
+    res.status(201).json({
+      mensagem: 'Usuário cadastrado com sucesso',
+      usuario: {
+        id: novoUsuario.id,
+        nome: novoUsuario.nome,
+        email: novoUsuario.email,
+        cpf: novoUsuario.cpf,
+        celular: novoUsuario.celular,
+        endereco: novoUsuario.endereco,
+      },
+    });
   } catch (error) {
     console.error('Erro ao cadastrar usuário:', error);
     res.status(500).json({ erro: 'Erro ao cadastrar usuário' });
