@@ -3,7 +3,10 @@ const router = express.Router();
 
 const usuarioController = require('../controllers/UsuarioController');
 
-router.post('/usuarios/cadastrar', usuarioController.cadastrarUsuario);
-router.post('/usuarios/login', usuarioController.loginUsuario);
+// Rota para cadastro de usuário
+router.post('/cadastrar', usuarioController.cadastrarUsuario);
 
-module.exports = router;
+// Rota para login de usuário
+router.post('/login', usuarioController.loginUsuario);
+
+module.exports = router; 
