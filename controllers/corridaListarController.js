@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+﻿const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.listarCorridas = async (req, res) => {
@@ -13,3 +13,5 @@ exports.listarCorridas = async (req, res) => {
     res.status(500).json({ erro: 'Erro ao listar corridas' });
   }
 };
+
+

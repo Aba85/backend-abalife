@@ -1,4 +1,4 @@
-// controllers/IdentidadeController.js
+﻿// controllers/IdentidadeController.js
 const { PrismaClient } = require('@prisma/client');
 
 const confirmarIdentidade = async (req, res) => {
@@ -8,7 +8,7 @@ const confirmarIdentidade = async (req, res) => {
     const corrida = await Corrida.findByPk(corridaId);
 
     if (!corrida || corrida.motoristaCpf !== motoristaCpf) {
-      return res.status(403).json({ erro: 'Corrida inválida ou motorista não autorizado.' });
+      return res.status(403).json({ erro: 'Corrida invÃ¡lida ou motorista nÃ£o autorizado.' });
     }
 
     corrida.identidadeConfirmada = confirmado;
@@ -22,4 +22,6 @@ const confirmarIdentidade = async (req, res) => {
 };
 
 module.exports = { confirmarIdentidade };
+
+
 

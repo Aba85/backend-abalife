@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+﻿module.exports = (sequelize, DataTypes) => {
   return sequelize.define('HistoricoIndicacao', {
   indicador_id: {
     type: DataTypes.INTEGER,
@@ -13,3 +13,4 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 }; 
+

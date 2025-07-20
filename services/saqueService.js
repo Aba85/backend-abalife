@@ -1,4 +1,4 @@
-const db = require('../prisma/client');
+﻿const db = require('../prisma/client');
 const { Op } = require('sequelize');
 
 async function podeSacar(usuarioId, tipo) {
@@ -33,4 +33,6 @@ module.exports = {
   podeSacar,
   saldoDisponivel
 };
+
+
 

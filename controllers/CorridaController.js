@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+﻿const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.chamarCorrida = async (req, res) => {
@@ -39,3 +39,5 @@ exports.listarCorridasUsuario = async (req, res) => {
     return res.status(500).json({ error: 'Erro ao buscar corridas' });
   }
 };
+
+

@@ -1,4 +1,4 @@
-// server.js
+﻿// server.js
 require('dotenv').config();
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('DATABASE_URL:', process.env.DATABASE_URL); // Prisma usa DATABASE_URL
@@ -20,7 +20,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// Importação das rotas
+// ImportaÃ§Ã£o das rotas
 const corridasAgendadasRoutes = require('./routes/corridasAgendadas');
 const identidadeRoutes = require('./routes/identidade');
 const relatorioRoutes = require('./routes/relatorios');
@@ -32,8 +32,9 @@ app.use('/identidade', identidadeRoutes);
 app.use('/relatorios', relatorioRoutes);
 app.use('/usuarios', usuarioRoutes);
 
-// Inicialização do servidor
+// InicializaÃ§Ã£o do servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`ðŸš€ Servidor rodando na porta ${PORT}`);
 }); 
+

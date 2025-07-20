@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+﻿module.exports = (sequelize, DataTypes) => {
   return sequelize.define('CodigoIndicacao', {
     codigo: {
       type: DataTypes.STRING,
@@ -11,3 +11,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 }; 
+
+

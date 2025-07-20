@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const WalletController = require('../controllers/WalletController');
 const auth = require('../middleware/auth');
@@ -9,8 +9,10 @@ router.get('/', auth, WalletController.obterCarteira);
 // Solicitar saque manual
 router.post('/saque', auth, WalletController.solicitarSaque);
 
-// Visualizar transações da carteira
+// Visualizar transaÃ§Ãµes da carteira
 router.get('/transacoes', auth, WalletController.historicoTransacoes);
 
 module.exports = router;
+
+
 

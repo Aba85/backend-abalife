@@ -1,4 +1,4 @@
-// models/CorridaAgendada.js
+﻿// models/CorridaAgendada.js
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define('CorridaAgendada', {
     passageiroCpf: {
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.STRING,
-      defaultValue: 'pendente' // pendente, aceita, concluída, cancelada
+      defaultValue: 'pendente' // pendente, aceita, concluÃ­da, cancelada
     },
     tipo: {
       type: DataTypes.STRING, // agendada | personalizada
@@ -35,3 +35,4 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 }; 
+

@@ -1,4 +1,4 @@
-// controllers/SaqueController.js
+﻿// controllers/SaqueController.js
 
 const { Saque, Usuario } = require('../prisma/client');
 const { Op } = require('sequelize');
@@ -27,19 +27,19 @@ module.exports = {
       const usuario = await Usuario.findByPk(usuarioId);
 
       if (!usuario) {
-        return res.status(404).json({ erro: 'Usuário não encontrado.' });
+        return res.status(404).json({ erro: 'UsuÃ¡rio nÃ£o encontrado.' });
       }
 
       const tipo = usuario.tipo; // 'passageiro' ou 'motorista'
       const regra = regras[tipo];
 
       if (!regra) {
-        return res.status(400).json({ erro: 'Tipo de usuário inválido.' });
+        return res.status(400).json({ erro: 'Tipo de usuÃ¡rio invÃ¡lido.' });
       }
 
       if (valor < regra.minimo) {
         return res.status(400).json({
-          erro: `Valor mínimo para saque é de R$ ${regra.minimo.toFixed(2)}.`,
+          erro: `Valor mÃ­nimo para saque Ã© de R$ ${regra.minimo.toFixed(2)}.`,
         });
       }
 
@@ -52,7 +52,7 @@ module.exports = {
         const diasDesdeUltimo = diasEntreDatas(new Date(), ultimoSaque.createdAt);
         if (diasDesdeUltimo < regra.frequenciaDias) {
           return res.status(400).json({
-            erro: `Você só pode sacar uma vez a cada ${regra.frequenciaDias} dia(s).`,
+            erro: `VocÃª sÃ³ pode sacar uma vez a cada ${regra.frequenciaDias} dia(s).`,
           });
         }
       }
@@ -88,4 +88,6 @@ module.exports = {
     }
   },
 };
+
+
 

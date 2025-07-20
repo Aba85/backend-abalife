@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+﻿const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -6,19 +6,19 @@ const prisma = new PrismaClient();
 
 exports.cadastrarUsuario = async (req, res) => {
   const { nome, email, senha, cpf, celular, endereco } = req.body;
-console.log(Object.keys(prisma)); // Mostra todos os modelos disponíveis
+console.log(Object.keys(prisma)); // Mostra todos os modelos disponÃ­veis
   try {
-    const usuarioExistente = await prisma.usuario.findUnique({
+    const usuarioExistente = await prisma.usuarios.findUnique({
       where: { email },
     });
 
     if (usuarioExistente) {
-      return res.status(400).json({ erro: 'E-mail já cadastrado' });
+      return res.status(400).json({ erro: 'E-mail jÃ¡ cadastrado' });
     }
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-    const novoUsuario = await prisma.usuario.create({
+    const novoUsuario = await prisma.usuarios.create({
       data: {
         nome,
         email,
@@ -30,7 +30,7 @@ console.log(Object.keys(prisma)); // Mostra todos os modelos disponíveis
     });
 
     res.status(201).json({
-      mensagem: 'Usuário cadastrado com sucesso',
+      mensagem: 'UsuÃ¡rio cadastrado com sucesso',
       usuario: {
         id: novoUsuario.id,
         nome: novoUsuario.nome,
@@ -41,8 +41,8 @@ console.log(Object.keys(prisma)); // Mostra todos os modelos disponíveis
       },
     });
   } catch (error) {
-    console.error('Erro ao cadastrar usuário:', error);
-    res.status(500).json({ erro: 'Erro ao cadastrar usuário' });
+    console.error('Erro ao cadastrar usuÃ¡rio:', error);
+    res.status(500).json({ erro: 'Erro ao cadastrar usuÃ¡rio' });
   }
 };
 
@@ -50,12 +50,12 @@ exports.loginUsuario = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-    const usuario = await prisma.usuario.findUnique({
+    const usuario = await prisma.usuarios.findUnique({
       where: { email },
     });
 
     if (!usuario) {
-      return res.status(404).json({ erro: 'Usuário não encontrado' });
+      return res.status(404).json({ erro: 'UsuÃ¡rio nÃ£o encontrado' });
     }
 
     const senhaValida = await bcrypt.compare(senha, usuario.senha);
@@ -85,3 +85,4 @@ exports.loginUsuario = async (req, res) => {
     res.status(500).json({ erro: 'Erro ao realizar login' });
   }
 }; 
+

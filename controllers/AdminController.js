@@ -1,4 +1,4 @@
-// controllers/AdminController.js
+﻿// controllers/AdminController.js
 const { Usuario, Corrida, Indicacao } = require('../prisma/client');
 
 const listarUsuarios = async (req, res) => {
@@ -21,4 +21,6 @@ module.exports = {
   listarCorridas,
   listarIndicacoes
 };
+
+
 

@@ -1,10 +1,10 @@
-// services/pagamentoService.js
-// Serviço simulado para pagamentos (Pix ou carteira)
+﻿// services/pagamentoService.js
+// ServiÃ§o simulado para pagamentos (Pix ou carteira)
 
 module.exports = {
   realizarPagamento: async (usuarioId, valor, tipoPagamento) => {
     // Aqui pode integrar com APIs externas, Pix, gateways, etc.
-    console.log(`Processando pagamento de R$${valor} para usuário ${usuarioId} via ${tipoPagamento}`);
+    console.log(`Processando pagamento de R$${valor} para usuÃ¡rio ${usuarioId} via ${tipoPagamento}`);
     // Simular sucesso
     return {
       sucesso: true,
@@ -12,4 +12,6 @@ module.exports = {
     };
   }
 };
+
+
 

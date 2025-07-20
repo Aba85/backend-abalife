@@ -1,4 +1,4 @@
-// validators/usuarioValidator.js
+﻿// validators/usuarioValidator.js
 function validarCPF(cpf) {
   cpf = cpf.replace(/[^\d]+/g, '');
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -29,4 +29,6 @@ module.exports = {
   validarTelefone,
   validarSenha
 };
+
+
 

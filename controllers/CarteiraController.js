@@ -1,4 +1,4 @@
-// controllers/CarteiraController.js
+﻿// controllers/CarteiraController.js
 const { Carteira, Saque, Usuario } = require('../prisma/client');
 const { Op } = require('sequelize');
 
@@ -8,7 +8,7 @@ module.exports = {
       const usuarioId = req.usuario.id;
 
       const carteira = await Carteira.findOne({ where: { usuarioId } });
-      if (!carteira) return res.status(404).json({ erro: 'Carteira não encontrada.' });
+      if (!carteira) return res.status(404).json({ erro: 'Carteira nÃ£o encontrada.' });
 
       return res.json({ saldo: carteira.saldo });
     } catch (error) {
@@ -22,7 +22,7 @@ module.exports = {
       const usuarioId = req.usuario.id;
       const { valor } = req.body;
 
-      if (!valor || valor <= 0) return res.status(400).json({ erro: 'Valor inválido.' });
+      if (!valor || valor <= 0) return res.status(400).json({ erro: 'Valor invÃ¡lido.' });
 
       const carteira = await Carteira.findOne({ where: { usuarioId } });
       if (!carteira || carteira.saldo < valor) {
@@ -44,7 +44,7 @@ module.exports = {
       const usuario = req.usuario;
       const { valor } = req.body;
 
-      if (!valor || valor <= 0) return res.status(400).json({ erro: 'Valor inválido.' });
+      if (!valor || valor <= 0) return res.status(400).json({ erro: 'Valor invÃ¡lido.' });
 
       const carteira = await Carteira.findOne({ where: { usuarioId: usuario.id } });
       if (!carteira || carteira.saldo < valor) {
@@ -60,7 +60,7 @@ module.exports = {
       const valorMinimo = usuario.tipo === 'motorista' ? 10 : 50;
 
       if (valor < valorMinimo) {
-        return res.status(400).json({ erro: `Valor mínimo para saque: R$ ${valorMinimo}` });
+        return res.status(400).json({ erro: `Valor mÃ­nimo para saque: R$ ${valorMinimo}` });
       }
 
       const saquesHoje = await Saque.count({
@@ -71,11 +71,11 @@ module.exports = {
       });
 
       if (usuario.tipo === 'passageiro' && saquesHoje > 0) {
-        return res.status(400).json({ erro: 'Passageiro só pode sacar uma vez por semana.' });
+        return res.status(400).json({ erro: 'Passageiro sÃ³ pode sacar uma vez por semana.' });
       }
 
       if (usuario.tipo === 'motorista' && saquesHoje >= 1) {
-        return res.status(400).json({ erro: 'Motorista já fez o saque do dia.' });
+        return res.status(400).json({ erro: 'Motorista jÃ¡ fez o saque do dia.' });
       }
 
       carteira.saldo -= valor;
@@ -100,9 +100,11 @@ module.exports = {
       const saques = await Saque.findAll({ where: { usuarioId }, order: [['createdAt', 'DESC']] });
       return res.json(saques);
     } catch (error) {
-      console.error('Erro ao obter histórico de saques:', error);
+      console.error('Erro ao obter histÃ³rico de saques:', error);
       return res.status(500).json({ erro: 'Erro interno do servidor.' });
     }
   }
 };
+
+
 

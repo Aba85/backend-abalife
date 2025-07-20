@@ -1,4 +1,4 @@
-// seeders/manualSeeder.js
+﻿// seeders/manualSeeder.js
 const bcrypt = require('bcryptjs');
 const db = require('../prisma/client');
 
@@ -34,9 +34,11 @@ async function seed() {
     }
   ]);
 
-  console.log('Seed concluído com sucesso.');
+  console.log('Seed concluÃ­do com sucesso.');
   process.exit();
 }
 
 seed();
+
+
 

@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+﻿module.exports = (sequelize, DataTypes) => {
   const Corrida = sequelize.define('Corrida', {
     passageiro_id: {
       type: DataTypes.INTEGER,
@@ -47,3 +47,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return Corrida;
 };
+
+

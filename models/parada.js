@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+﻿module.exports = (sequelize, DataTypes) => {
   return sequelize.define('Parada', {
   corrida_id: {
     type: DataTypes.INTEGER,
@@ -29,3 +29,5 @@ module.exports = (sequelize, DataTypes) => {
   timestamps: true,
 });
       };
+
+

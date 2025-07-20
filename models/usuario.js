@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+﻿module.exports = (sequelize, DataTypes) => {
   const Usuario = sequelize.define('Usuario', {
     nome: {
       type: DataTypes.STRING,
@@ -30,3 +30,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return Usuario;
 };
+
+

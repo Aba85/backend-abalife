@@ -1,4 +1,4 @@
-// middlewares/validarSaque.js
+﻿// middlewares/validarSaque.js
 
 const { Saque } = require('../prisma/client');
 const { Op } = require('sequelize');
@@ -8,12 +8,12 @@ module.exports = async function validarSaque(req, res, next) {
   const { valor } = req.body;
 
   if (!valor || valor <= 0) {
-    return res.status(400).json({ erro: 'Valor do saque inválido.' });
+    return res.status(400).json({ erro: 'Valor do saque invÃ¡lido.' });
   }
 
   const limite = usuario.tipo === 'motorista' ? 10 : 50;
   if (valor < limite) {
-    return res.status(400).json({ erro: `Valor mínimo para saque é R$ ${limite}` });
+    return res.status(400).json({ erro: `Valor mÃ­nimo para saque Ã© R$ ${limite}` });
   }
 
   const dataLimite = new Date();
@@ -27,9 +27,11 @@ module.exports = async function validarSaque(req, res, next) {
   });
 
   if (saquesRecentes.length > 0) {
-    return res.status(400).json({ erro: 'Limite de frequência de saque excedido.' });
+    return res.status(400).json({ erro: 'Limite de frequÃªncia de saque excedido.' });
   }
 
   next();
 };
+
+
 

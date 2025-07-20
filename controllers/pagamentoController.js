@@ -1,4 +1,4 @@
-// caminho: controllers/pagamentoController.js
+﻿// caminho: controllers/pagamentoController.js
 
 const Usuario = require('../prisma/client/Usuario');
 
@@ -10,14 +10,14 @@ exports.atualizarFormaPagamento = async (req, res) => {
     const usuario = await Usuario.findById(req.usuarioId);
 
     if (!usuario) {
-      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
+      return res.status(404).json({ mensagem: 'UsuÃ¡rio nÃ£o encontrado' });
     }
 
     if (tipo === 'pix') {
       usuario.formaPagamento = { tipo: 'pix', cartao: {} };
     } else if (tipo === 'cartao') {
       if (!cartao || !cartao.numero || !cartao.nomeTitular || !cartao.validade || !cartao.cpfTitular) {
-        return res.status(400).json({ mensagem: 'Dados do cartão incompletos' });
+        return res.status(400).json({ mensagem: 'Dados do cartÃ£o incompletos' });
       }
 
       usuario.formaPagamento = {
@@ -30,7 +30,7 @@ exports.atualizarFormaPagamento = async (req, res) => {
         },
       };
     } else {
-      return res.status(400).json({ mensagem: 'Tipo de pagamento inválido' });
+      return res.status(400).json({ mensagem: 'Tipo de pagamento invÃ¡lido' });
     }
 
     await usuario.save();
@@ -45,11 +45,13 @@ exports.consultarFormaPagamento = async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.usuarioId);
     if (!usuario) {
-      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
+      return res.status(404).json({ mensagem: 'UsuÃ¡rio nÃ£o encontrado' });
     }
     res.json({ formaPagamento: usuario.formaPagamento });
   } catch (error) {
     res.status(500).json({ mensagem: 'Erro ao consultar forma de pagamento' });
   }
 };
+
+
 

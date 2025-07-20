@@ -1,4 +1,4 @@
-function validarCPF(cpf) {
+﻿function validarCPF(cpf) {
   cpf = cpf.replace(/[^\d]+/g, '');
   if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
 
@@ -27,7 +27,7 @@ function validarSenha(senha, confirmarSenha) {
     return { valido: false, mensagem: 'A senha deve ter pelo menos 6 caracteres.' };
   }
   if (senha !== confirmarSenha) {
-    return { valido: false, mensagem: 'As senhas não coincidem.' };
+    return { valido: false, mensagem: 'As senhas nÃ£o coincidem.' };
   }
   return { valido: true };
 }
@@ -37,4 +37,6 @@ module.exports = {
   validarTelefone,
   validarSenha
 };
+
+
 

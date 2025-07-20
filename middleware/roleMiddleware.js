@@ -1,10 +1,10 @@
-// middlewares/roleMiddleware.js
+﻿// middlewares/roleMiddleware.js
 const jwt = require('jsonwebtoken');
 
 const roleMiddleware = (rolePermitido) => {
   return (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ erro: 'Token não fornecido.' });
+    if (!token) return res.status(401).json({ erro: 'Token nÃ£o fornecido.' });
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -16,10 +16,12 @@ const roleMiddleware = (rolePermitido) => {
       req.perfil = decoded.perfil;
       next();
     } catch (err) {
-      return res.status(401).json({ erro: 'Token inválido.' });
+      return res.status(401).json({ erro: 'Token invÃ¡lido.' });
     }
   };
 };
 
 module.exports = roleMiddleware;
+
+
 
