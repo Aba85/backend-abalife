@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 
 exports.cadastrarUsuario = async (req, res) => {
   const { nome, email, senha, cpf, celular, endereco } = req.body;
-
+console.log(Object.keys(prisma)); // Mostra todos os modelos disponíveis
   try {
-    const usuarioExistente = await prisma.Usuario.findUnique({
+    const usuarioExistente = await prisma.usuario.findUnique({
       where: { email },
     });
 
