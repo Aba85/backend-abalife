@@ -8,7 +8,7 @@ exports.cadastrarUsuario = async (req, res) => {
   const { nome, email, senha, cpf, celular, endereco } = req.body;
 
   try {
-    const usuarioExistente = await prisma.Usuario.findUnique({
+    const usuarioExistente = await prisma.usuario.findUnique({
       where: { email },
     });
 
