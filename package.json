@@ -4,7 +4,7 @@
   "description": "Backend do projeto Aba Life",
   "main": "server.js",
   "scripts": {
-    "postinstall": "npx prisma generate",
+    "postinstall": "prisma generate",
     "start": "npx prisma migrate deploy && node server.js",
     "dev": "nodemon server.js"
   },
