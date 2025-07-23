@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   const Corrida = sequelize.define('Corrida', {
     origem: {
       type: DataTypes.STRING,
@@ -37,5 +37,7 @@
 
   return Corrida;
 };
+
+
 
 

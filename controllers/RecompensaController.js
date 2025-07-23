@@ -1,4 +1,4 @@
-﻿const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.recompensasPassageiro = async (req, res) => {
@@ -14,7 +14,7 @@ exports.recompensasPassageiro = async (req, res) => {
     });
 
     if (!usuario) {
-      return res.status(404).json({ error: 'UsuÃ¡rio nÃ£o encontrado' });
+      return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
     const corridas30dias = usuario.corridas.filter((c) => {
@@ -62,5 +62,7 @@ exports.recompensasPassageiro = async (req, res) => {
     return res.status(500).json({ error: 'Erro ao calcular recompensas' });
   }
 };
+
+
 
 

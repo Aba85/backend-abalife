@@ -1,7 +1,7 @@
-ï»¿// controllers/SaqueController.js
+// controllers/SaqueController.js
 
-const { Saque, Usuario } = require('../prisma/client');
-const { Op } = require('sequelize');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const regras = {
   passageiro: {
@@ -24,45 +24,50 @@ module.exports = {
     try {
       const { valor, descricao } = req.body;
       const usuarioId = req.usuario.id;
-      const usuario = await Usuario.findByPk(usuarioId);
+
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: usuarioId },
+      });
 
       if (!usuario) {
-        return res.status(404).json({ erro: 'UsuÃƒÂ¡rio nÃƒÂ£o encontrado.' });
+        return res.status(404).json({ erro: 'Usuário não encontrado.' });
       }
 
-      const tipo = usuario.tipo; // 'passageiro' ou 'motorista'
+      const tipo = usuario.tipo;
       const regra = regras[tipo];
 
       if (!regra) {
-        return res.status(400).json({ erro: 'Tipo de usuÃƒÂ¡rio invÃƒÂ¡lido.' });
+        return res.status(400).json({ erro: 'Tipo de usuário inválido.' });
       }
 
       if (valor < regra.minimo) {
         return res.status(400).json({
-          erro: `Valor mÃƒÂ­nimo para saque ÃƒÂ© de R$ ${regra.minimo.toFixed(2)}.`,
+          erro: `Valor mínimo para saque é de R$ ${regra.minimo.toFixed(2)}.`,
         });
       }
 
-      const ultimoSaque = await Saque.findOne({
+      const ultimoSaque = await prisma.saque.findFirst({
         where: { usuarioId },
-        order: [['createdAt', 'DESC']],
+        orderBy: { createdAt: 'desc' },
       });
 
       if (ultimoSaque) {
-        const diasDesdeUltimo = diasEntreDatas(new Date(), ultimoSaque.createdAt);
+        const diasDesdeUltimo = diasEntreDatas(new Date(), new Date(ultimoSaque.createdAt));
         if (diasDesdeUltimo < regra.frequenciaDias) {
           return res.status(400).json({
-            erro: `VocÃƒÂª sÃƒÂ³ pode sacar uma vez a cada ${regra.frequenciaDias} dia(s).`,
+            erro: `Você só pode sacar uma vez a cada ${regra.frequenciaDias} dia(s).`,
           });
         }
       }
 
-      const novoSaque = await Saque.create({
-        valor,
-        tipoUsuario: tipo,
-        usuarioId,
-        descricao,
-        status: 'pendente',
+      const novoSaque = await prisma.saque.create({
+        data: {
+          valor,
+          tipoUsuario: tipo,
+          usuarioId,
+          descricao,
+          status: 'pendente',
+        },
       });
 
       res.status(201).json(novoSaque);
@@ -76,9 +81,9 @@ module.exports = {
     try {
       const usuarioId = req.usuario.id;
 
-      const saques = await Saque.findAll({
+      const saques = await prisma.saque.findMany({
         where: { usuarioId },
-        order: [['createdAt', 'DESC']],
+        orderBy: { createdAt: 'desc' },
       });
 
       res.json(saques);
@@ -87,7 +92,91 @@ module.exports = {
       res.status(500).json({ erro: 'Erro interno ao listar saques.' });
     }
   },
-};
 
+  async atualizarSaque(req, res) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const saque = await prisma.saque.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!saque) {
+        return res.status(404).json({ erro: 'Saque não encontrado.' });
+      }
+
+      const saqueAtualizado = await prisma.saque.update({
+        where: { id: parseInt(id) },
+        data: { status },
+      });
+
+      res.json(saqueAtualizado);
+    } catch (error) {
+      console.error('Erro ao atualizar saque:', error);
+      res.status(500).json({ erro: 'Erro interno ao atualizar saque.' });
+    }
+  },
+
+  async aprovarSaque(req, res) {
+    try {
+      const { id } = req.params;
+
+      const saque = await prisma.saque.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!saque) {
+        return res.status(404).json({ erro: 'Saque não encontrado.' });
+      }
+
+      if (saque.status === 'aprovado') {
+        return res.status(400).json({ erro: 'Saque já foi aprovado.' });
+      }
+
+      const atualizado = await prisma.saque.update({
+        where: { id: parseInt(id) },
+        data: { status: 'aprovado' },
+      });
+
+      res.json(atualizado);
+    } catch (error) {
+      console.error('Erro ao aprovar saque:', error);
+      res.status(500).json({ erro: 'Erro interno ao aprovar saque.' });
+    }
+  },
+
+  async recusarSaque(req, res) {
+    try {
+      const { id } = req.params;
+      const { motivo } = req.body;
+
+      const saque = await prisma.saque.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!saque) {
+        return res.status(404).json({ erro: 'Saque não encontrado.' });
+      }
+
+      if (saque.status === 'recusado') {
+        return res.status(400).json({ erro: 'Saque já foi recusado.' });
+      }
+
+      const atualizado = await prisma.saque.update({
+        where: { id: parseInt(id) },
+        data: {
+          status: 'recusado',
+          motivo,
+        },
+      });
+
+      res.json(atualizado);
+    } catch (error) {
+      console.error('Erro ao recusar saque:', error);
+      res.status(500).json({ erro: 'Erro interno ao recusar saque.' });
+    }
+  },
+}; 
 
 

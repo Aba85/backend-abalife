@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('BairroPrioridade', {
     nome: {
       type: DataTypes.STRING,
@@ -22,5 +22,7 @@
   });
   return Bairroprioridade;
    };
+
+
 
 

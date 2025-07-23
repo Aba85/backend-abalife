@@ -1,32 +1,15 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   const Usuario = sequelize.define('Usuario', {
-    nome: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    cpf: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    telefone: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    senha: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    codigoIndicacao: {
-      type: DataTypes.STRING,
-      allowNull: true
-    }
+    nome: DataTypes.STRING,
+    email: DataTypes.STRING,
+    senha: DataTypes.STRING,
+    tipo: DataTypes.STRING, // 'passageiro', 'motorista', 'admin'
   });
+
+  Usuario.associate = (models) => {
+    Usuario.hasMany(models.Corrida, { foreignKey: 'passageiroId', as: 'corridasPassageiro' });
+    Usuario.hasMany(models.Corrida, { foreignKey: 'motoristaId', as: 'corridasMotorista' });
+  };
 
   return Usuario;
 };

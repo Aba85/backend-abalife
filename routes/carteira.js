@@ -1,13 +1,15 @@
-﻿// routes/carteira.js
+// routes/carteira.js
 const express = require('express');
 const router = express.Router();
-const carteiraController = require('../controllers/carteiraController');
+const CarteiraController = require('../controllers/CarteiraController');
 const autenticar = require('../middlewares/autenticar');
 
-router.get('/saldo', autenticar, carteiraController.consultarSaldo);
-router.post('/usar', autenticar, carteiraController.usarSaldo);
+// Rota para obter o saldo da carteira
+router.get('/saldo', autenticar, CarteiraController.obterSaldo);
 
-module.exports = router;
+// Rota para usar o saldo em uma viagem
+router.post('/usar-saldo', autenticar, CarteiraController.usarSaldoEmViagem);
 
+module.exports = router; 
 
 

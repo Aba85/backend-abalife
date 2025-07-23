@@ -1,4 +1,4 @@
-﻿// config/database.js
+// config/database.js
 require('dotenv').config();
 
 module.exports = {
@@ -9,6 +9,8 @@ module.exports = {
   dialect: 'postgres',
   logging: false
 };
+
+
 
 
 

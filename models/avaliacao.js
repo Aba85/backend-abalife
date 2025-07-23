@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('Avaliacao', {
     avaliador_id: {
       type: DataTypes.INTEGER,
@@ -26,5 +26,7 @@
   });
   return Avaliacao;
 };
+
+
 
 

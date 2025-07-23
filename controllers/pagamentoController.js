@@ -1,26 +1,37 @@
-﻿// caminho: controllers/pagamentoController.js
+// caminho: controllers/pagamentoController.js
 
-const Usuario = require('../prisma/client/Usuario');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 // Atualizar forma de pagamento
 exports.atualizarFormaPagamento = async (req, res) => {
   const { tipo, cartao } = req.body;
 
   try {
-    const usuario = await Usuario.findById(req.usuarioId);
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: req.usuarioId },
+    });
 
     if (!usuario) {
-      return res.status(404).json({ mensagem: 'UsuÃ¡rio nÃ£o encontrado' });
+      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
 
+    let formaPagamento = {};
+
     if (tipo === 'pix') {
-      usuario.formaPagamento = { tipo: 'pix', cartao: {} };
+      formaPagamento = { tipo: 'pix', cartao: null };
     } else if (tipo === 'cartao') {
-      if (!cartao || !cartao.numero || !cartao.nomeTitular || !cartao.validade || !cartao.cpfTitular) {
-        return res.status(400).json({ mensagem: 'Dados do cartÃ£o incompletos' });
+      if (
+        !cartao ||
+        !cartao.numero ||
+        !cartao.nomeTitular ||
+        !cartao.validade ||
+        !cartao.cpfTitular
+      ) {
+        return res.status(400).json({ mensagem: 'Dados do cartão incompletos' });
       }
 
-      usuario.formaPagamento = {
+      formaPagamento = {
         tipo: 'cartao',
         cartao: {
           numero: cartao.numero,
@@ -30,28 +41,44 @@ exports.atualizarFormaPagamento = async (req, res) => {
         },
       };
     } else {
-      return res.status(400).json({ mensagem: 'Tipo de pagamento invÃ¡lido' });
+      return res.status(400).json({ mensagem: 'Tipo de pagamento inválido' });
     }
 
-    await usuario.save();
-    res.json({ mensagem: 'Forma de pagamento atualizada com sucesso' });
+    await prisma.usuario.update({
+      where: { id: req.usuarioId },
+      data: {
+        formaPagamento,
+      },
+    });
+
+    return res.json({ mensagem: 'Forma de pagamento atualizada com sucesso' });
   } catch (error) {
-    res.status(500).json({ mensagem: 'Erro ao atualizar forma de pagamento', erro: error.message });
+    return res.status(500).json({
+      mensagem: 'Erro ao atualizar forma de pagamento',
+      erro: error.message,
+    });
   }
 };
 
 // Consultar forma de pagamento atual
 exports.consultarFormaPagamento = async (req, res) => {
   try {
-    const usuario = await Usuario.findById(req.usuarioId);
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: req.usuarioId },
+      select: {
+        formaPagamento: true,
+      },
+    });
+
     if (!usuario) {
-      return res.status(404).json({ mensagem: 'UsuÃ¡rio nÃ£o encontrado' });
+      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
-    res.json({ formaPagamento: usuario.formaPagamento });
+
+    return res.json({ formaPagamento: usuario.formaPagamento });
   } catch (error) {
-    res.status(500).json({ mensagem: 'Erro ao consultar forma de pagamento' });
+    return res.status(500).json({
+      mensagem: 'Erro ao consultar forma de pagamento',
+      erro: error.message,
+    });
   }
-};
-
-
-
+}; 

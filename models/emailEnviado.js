@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('EmailEnviado', {
   usuario_id: {
     type: DataTypes.INTEGER,
@@ -13,4 +13,6 @@
      },
   });
 }; 
+
+
 

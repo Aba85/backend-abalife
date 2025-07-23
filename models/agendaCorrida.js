@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('AgendaCorrida', {
     passageiro_id: { type: DataTypes.INTEGER, allowNull: false },
     categoria: { type: DataTypes.ENUM('alpha', 'delta', 'omega', 'mala', 'entrega', 'arca'), allowNull: false },
@@ -14,5 +14,7 @@
   });
   return Agendarcorrida;
    };
+
+
 
 

@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('Documento', {
     usuario_id: {
       type: DataTypes.INTEGER,
@@ -10,4 +10,6 @@
     },
   });
 }; 
+
+
 

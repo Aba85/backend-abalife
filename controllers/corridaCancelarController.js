@@ -1,11 +1,11 @@
-﻿const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.cancelarCorrida = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const corrida = await prisma.corrida.update({
+    const corrida = await prisma.corridas.update({
       where: { id: parseInt(id) },
       data: { status: 'CANCELADA' },
     });
@@ -15,6 +15,5 @@ exports.cancelarCorrida = async (req, res) => {
     console.error('Erro ao cancelar corrida:', error);
     res.status(500).json({ erro: 'Erro ao cancelar corrida' });
   }
-};
-
+}; 
 

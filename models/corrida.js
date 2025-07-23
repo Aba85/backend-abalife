@@ -1,51 +1,19 @@
-ï»¿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   const Corrida = sequelize.define('Corrida', {
-    passageiro_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    motorista_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    status: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    origem: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    destino: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    valor: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-    },
-    dataHora: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    personalizada: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    agendada: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    codigo_motorista_personalizado: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-  }, {
-    tableName: 'corridas',
-    timestamps: true,
+    origem: DataTypes.STRING,
+    destino: DataTypes.STRING,
+    status: DataTypes.STRING, // pendente, aceita, concluída, cancelada
+    passageiroId: DataTypes.INTEGER,
+    motoristaId: DataTypes.INTEGER,
   });
+
+  Corrida.associate = (models) => {
+    Corrida.belongsTo(models.Usuario, { foreignKey: 'passageiroId', as: 'passageiro' });
+    Corrida.belongsTo(models.Usuario, { foreignKey: 'motoristaId', as: 'motorista' });
+  };
 
   return Corrida;
 };
+
 
 

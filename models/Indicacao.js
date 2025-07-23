@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   const Indicacao = sequelize.define('Indicacao', {
     indicanteId: {
       type: DataTypes.INTEGER,
@@ -17,6 +17,8 @@
 
   return Indicacao;
 }; 
+
+
 
 
 

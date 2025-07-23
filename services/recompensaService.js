@@ -1,4 +1,4 @@
-﻿const db = require('../prisma/client');
+const db = require('../prisma/client');
 const { Op } = require('sequelize');
 
 async function calcularRecompensaPassageiro(usuarioId) {
@@ -7,7 +7,7 @@ async function calcularRecompensaPassageiro(usuarioId) {
       usuarioId,
       status: 'finalizada',
       createdAt: {
-        [Op.gte]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000) // Ãºltimos 30 dias
+        [Op.gte]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000) // últimos 30 dias
       }
     }
   });
@@ -43,6 +43,8 @@ module.exports = {
   calcularRecompensaPassageiro,
   gerarRecompensaPorIndicacao
 };
+
+
 
 
 

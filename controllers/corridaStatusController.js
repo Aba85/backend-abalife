@@ -1,4 +1,4 @@
-﻿const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.atualizarStatusCorrida = async (req, res) => {
@@ -17,5 +17,7 @@ exports.atualizarStatusCorrida = async (req, res) => {
     res.status(500).json({ erro: 'Erro ao atualizar status da corrida' });
   }
 };
+
+
 
 

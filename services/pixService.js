@@ -1,5 +1,5 @@
-﻿// services/pixService.js
-// ServiÃ§o bÃ¡sico para integraÃ§Ã£o com Pix (placeholder)
+// services/pixService.js
+// Serviço básico para integração com Pix (placeholder)
 
 module.exports = {
   enviarPix: async (chavePix, valor) => {
@@ -11,6 +11,8 @@ module.exports = {
     };
   }
 };
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿// controllers/CorridaAgendadaController.js
+// controllers/CorridaAgendadaController.js
 const { PrismaClient } = require('@prisma/client');
 
 const agendarCorrida = async (req, res) => {
@@ -36,6 +36,8 @@ module.exports = {
   agendarCorrida,
   listarCorridasAgendadas
 };
+
+
 
 
 

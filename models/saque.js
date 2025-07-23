@@ -1,4 +1,4 @@
-﻿// models/saque.js
+// models/saque.js
 module.exports = (sequelize, DataTypes) => {
   const Saque = sequelize.define('Saque', {
     usuarioId: {
@@ -28,4 +28,6 @@ module.exports = (sequelize, DataTypes) => {
 
   return Saque;
 }; 
+
+
 

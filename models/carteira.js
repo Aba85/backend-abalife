@@ -1,4 +1,4 @@
-﻿module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('Carteira', {
     usuarioId: {
       type: DataTypes.INTEGER,
@@ -19,5 +19,7 @@
 
   return Carteira;
 }; 
+
+
 
 

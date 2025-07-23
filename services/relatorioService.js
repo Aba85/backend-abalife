@@ -1,4 +1,4 @@
-﻿const db = require('../prisma/client');
+const db = require('../prisma/client');
 
 async function gerarRelatorioRecompensas(usuarioId) {
   return await db.Recompensa.findAll({
@@ -10,6 +10,8 @@ async function gerarRelatorioRecompensas(usuarioId) {
 module.exports = {
   gerarRelatorioRecompensas
 };
+
+
 
 
 
