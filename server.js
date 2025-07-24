@@ -1,13 +1,26 @@
+require('dotenv').config(); // ✅ Carrega variáveis de ambiente logo no início
+
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-
-// Carregar variáveis de ambiente
-dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ✅ Conexão com o PostgreSQL via Prisma
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+async function testarConexao() {
+  try {
+    await prisma.$connect();
+    console.log('🔌 Conectado ao PostgreSQL com sucesso!');
+  } catch (erro) {
+    console.error('❌ Erro ao conectar ao PostgreSQL:', erro);
+    process.exit(1);
+  }
+}
+testarConexao();
 
 // Importar rotas
 const usuarioRoutes = require('./routes/usuarioRoutes');
@@ -30,9 +43,14 @@ app.use('/avaliacoes', avaliacaoRoutes);
 app.use('/historico', historicoRoutes);
 app.use('/admin', adminRoutes);
 
-// Exemplo de rota protegida
+// Rota de teste protegida com token JWT
 app.get('/protegida', authMiddleware, (req, res) => {
-  res.json({ mensagem: `Acesso permitido. ID do usuário: ${req.usuarioId}` });
+  res.json({ mensagem: `Acesso permitido. ID do usuário autenticado: ${req.usuarioId}` });
+});
+
+// Rota pública de saúde (para teste simples)
+app.get('/', (req, res) => {
+  res.send('🚀 API Aba Life rodando com sucesso!');
 });
 
 // Iniciar servidor
