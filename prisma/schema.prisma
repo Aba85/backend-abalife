@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -42,4 +43,4 @@ model corridas {
   atualizadaEm DateTime  @updatedAt
   motorista    usuarios? @relation("MotoristaCorridas", fields: [motoristaId], references: [id])
   passageiro   usuarios  @relation("PassageiroCorridas", fields: [passageiroId], references: [id])
-}
+} 
