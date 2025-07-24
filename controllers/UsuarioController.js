@@ -16,7 +16,7 @@ module.exports = {
     try {
       const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-      const usuarioCriado = await prisma.Usuario.create({
+      const usuarioCriado = await prisma.usuario.create({
         data: {
           nome,
           email,
@@ -42,7 +42,7 @@ module.exports = {
     }
 
     try {
-      const usuario = await prisma.Usuario.findUnique({ where: { email } });
+      const usuario = await prisma.usuario.findUnique({ where: { email } });
       if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
 
       const senhaValida = await bcrypt.compare(senha, usuario.senha);
@@ -59,7 +59,9 @@ module.exports = {
   buscarPerfil: async (req, res) => {
     const { id } = req.params;
     try {
-      const usuario = await prisma.Usuario.findUnique({ where: { id: parseInt(id) } });
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: parseInt(id) },
+      });
       if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
       return res.json(usuario);
     } catch (error) {
@@ -72,7 +74,7 @@ module.exports = {
     const { id } = req.params;
     const { nome, celular } = req.body;
     try {
-      const usuario = await prisma.Usuario.update({
+      const usuario = await prisma.usuario.update({
         where: { id: parseInt(id) },
         data: { nome, celular },
       });
