@@ -16,20 +16,20 @@ module.exports = {
     try {
       const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-      const usuarioCriado = await prisma.usuario.create({
+      const usuarioCriado = await prisma.Usuario.create({
         data: {
           nome,
           email,
           senha: senhaCriptografada,
           cpf,
           celular,
-          codigoIndicacao: codigoIndicacao || null, // opcional
+          codigoIndicacao: codigoIndicacao || null,
         },
       });
 
       return res.status(201).json({ usuario: usuarioCriado });
     } catch (error) {
-      console.error('❌ Erro ao cadastrar usuário:', error); // Exibe o erro real no terminal
+      console.error('❌ Erro ao cadastrar usuário:', error);
       return res.status(500).json({ erro: 'Erro ao cadastrar usuário.' });
     }
   },
@@ -42,7 +42,7 @@ module.exports = {
     }
 
     try {
-      const usuario = await prisma.usuario.findUnique({ where: { email } });
+      const usuario = await prisma.Usuario.findUnique({ where: { email } });
       if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
 
       const senhaValida = await bcrypt.compare(senha, usuario.senha);
@@ -59,7 +59,7 @@ module.exports = {
   buscarPerfil: async (req, res) => {
     const { id } = req.params;
     try {
-      const usuario = await prisma.usuario.findUnique({ where: { id: parseInt(id) } });
+      const usuario = await prisma.Usuario.findUnique({ where: { id: parseInt(id) } });
       if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
       return res.json(usuario);
     } catch (error) {
@@ -72,7 +72,7 @@ module.exports = {
     const { id } = req.params;
     const { nome, celular } = req.body;
     try {
-      const usuario = await prisma.usuario.update({
+      const usuario = await prisma.Usuario.update({
         where: { id: parseInt(id) },
         data: { nome, celular },
       });
