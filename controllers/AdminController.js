@@ -1,28 +1,29 @@
-// controllers/AdminController.js
-const { Usuario, Corrida, Indicacao } = require('../prismaClient');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const jwt = require('jsonwebtoken');
 
-const listarUsuarios = async (req, res) => {
-  const usuarios = await Usuario.findAll();
-  res.json(usuarios);
-};
-
-const listarIndicacoes = async (req, res) => {
-  const indicacoes = await Indicacao.findAll();
-  res.json(indicacoes);
-};
-
-const listarCorridas = async (req, res) => {
-  const corridas = await Corrida.findAll({ order: [['data', 'DESC']] });
-  res.json(corridas);
-};
+const JWT_SECRET = process.env.JWT_SECRET || 'segredo123';
 
 module.exports = {
-  listarUsuarios,
-  listarCorridas,
-  listarIndicacoes
+  login: async (req, res) => {
+    const { usuario, senha } = req.body;
+    if (usuario === process.env.ADMIN_USER && senha === process.env.ADMIN_PASS) {
+      const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '1d' });
+      return res.json({ token });
+    }
+    return res.status(401).json({ erro: 'Credenciais inválidas.' });
+  },
+
+  dashboard: async (req, res) => {
+    try {
+      const usuarios = await prisma.usuario.count();
+      const motoristas = await prisma.motorista.count();
+      const corridas = await prisma.corrida.count();
+      return res.json({ usuarios, motoristas, corridas });
+    } catch (error) {
+      return res.status(500).json({ erro: 'Erro ao obter dados do painel.' });
+    }
+  },
 };
-
-
-
 
 

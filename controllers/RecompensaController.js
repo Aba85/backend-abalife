@@ -1,68 +1,46 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-exports.recompensasPassageiro = async (req, res) => {
-  const { usuarioId } = req.params;
+module.exports = {
+  consultarRecompensas: async (req, res) => {
+    const { id } = req.params;
 
-  try {
-    const usuario = await prisma.usuarios.findUnique({
-      where: { id: parseInt(usuarioId) },
-      include: {
-        corridas: true,
-        indicados: true,
-      },
-    });
+    try {
+      // Primeiro, busca o código que o usuário usa como indicante
+      const usuario = await prisma.usuario.findUnique({ where: { id: parseInt(id) } });
+      if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
 
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
-    }
+      const seuCodigo = usuario.codigoIndicacao;
 
-    const corridas30dias = usuario.corridas.filter((c) => {
-      const dias = (new Date() - new Date(c.criadaEm)) / (1000 * 60 * 60 * 24);
-      return dias <= 30;
-    });
+      if (!seuCodigo) return res.json({ totalCorridas: 0, totalRecompensa: 0 });
 
-    const elegivel = corridas30dias.length > 0 && usuario.notaMedia >= 4.7;
+      // Busca os usuários que foram indicados por esse código
+      const indicados = await prisma.usuario.findMany({
+        where: { codigoIndicacao: seuCodigo },
+        select: { id: true },
+      });
 
-    let valorPorCorrida = 0;
-    switch (corridas30dias.length) {
-      case 1:
-        valorPorCorrida = 0.15;
-        break;
-      case 2:
-        valorPorCorrida = 0.25;
-        break;
-      case 3:
-        valorPorCorrida = 0.35;
-        break;
-      default:
-        if (corridas30dias.length >= 4) valorPorCorrida = 0.5;
-        break;
-    }
+      const idsIndicados = indicados.map(i => i.id);
 
-    const totalCorridasIndicados = await prisma.corrida.count({
-      where: {
-        usuarioId: {
-          in: usuario.indicados.map((i) => i.id),
+      // Soma todas as corridas finalizadas feitas pelos indicados
+      const corridas = await prisma.corrida.findMany({
+        where: {
+          passageiroId: { in: idsIndicados },
+          status: 'finalizada',
         },
-        status: 'FINALIZADA',
-      },
-    });
+      });
 
-    const totalRecompensa = valorPorCorrida * totalCorridasIndicados;
+      const totalCorridas = corridas.length;
+      const totalRecompensa = totalCorridas * 0.15;
 
-    return res.status(200).json({
-      elegivel,
-      valorPorCorrida,
-      totalCorridasIndicados,
-      totalRecompensa,
-    });
-  } catch (error) {
-    console.error('Erro ao calcular recompensas:', error);
-    return res.status(500).json({ error: 'Erro ao calcular recompensas' });
-  }
+      return res.json({
+        totalCorridas,
+        totalRecompensa: totalRecompensa.toFixed(2),
+      });
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ erro: 'Erro ao consultar recompensas.' });
+    }
+  },
 };
-
-
-
-

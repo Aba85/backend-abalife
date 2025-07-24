@@ -1,53 +1,82 @@
-const db = require('../models');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-exports.cadastro = async (req, res) => {
-  try {
-    const { nome, email, senha, tipo } = req.body;
+const JWT_SECRET = process.env.JWT_SECRET || 'segredo123';
 
-    const senhaHash = await bcrypt.hash(senha, 10);
+module.exports = {
+  cadastrarUsuario: async (req, res) => {
+    const { nome, email, senha, cpf, celular, codigoIndicacao } = req.body;
 
-    const novoUsuario = await db.Usuario.create({
-      nome,
-      email,
-      senha: senhaHash,
-      tipo, // 'passageiro' ou 'motorista'
-    });
+    if (!nome || !email || !senha || !cpf || !celular) {
+      return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+    }
 
-    res.status(201).json(novoUsuario);
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao cadastrar usu�rio', detalhes: error.message });
-  }
-};
+    try {
+      const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-exports.login = async (req, res) => {
-  try {
+      const usuarioCriado = await prisma.usuario.create({
+        data: {
+          nome,
+          email,
+          senha: senhaCriptografada,
+          cpf,
+          celular,
+          codigoIndicacao,
+        },
+      });
+
+      return res.status(201).json({ usuario: usuarioCriado });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ erro: 'Erro ao cadastrar usuário.' });
+    }
+  },
+
+  loginUsuario: async (req, res) => {
     const { email, senha } = req.body;
 
-    const usuario = await db.Usuario.findOne({ where: { email } });
-    if (!usuario) return res.status(404).json({ erro: 'Usu�rio n�o encontrado' });
+    if (!email || !senha) {
+      return res.status(400).json({ erro: 'Email e senha são obrigatórios.' });
+    }
 
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
-    if (!senhaValida) return res.status(401).json({ erro: 'Senha incorreta' });
+    try {
+      const usuario = await prisma.usuario.findUnique({ where: { email } });
+      if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
 
-    const token = jwt.sign({ id: usuario.id, tipo: usuario.tipo }, 'seu_segredo_jwt', { expiresIn: '7d' });
+      const senhaValida = await bcrypt.compare(senha, usuario.senha);
+      if (!senhaValida) return res.status(401).json({ erro: 'Senha inválida.' });
 
-    res.json({ token, usuario });
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao fazer login', detalhes: error.message });
-  }
+      const token = jwt.sign({ id: usuario.id }, JWT_SECRET, { expiresIn: '7d' });
+      return res.json({ token, usuario });
+    } catch (error) {
+      return res.status(500).json({ erro: 'Erro ao realizar login.' });
+    }
+  },
+
+  buscarPerfil: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const usuario = await prisma.usuario.findUnique({ where: { id: parseInt(id) } });
+      if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+      return res.json(usuario);
+    } catch (error) {
+      return res.status(500).json({ erro: 'Erro ao buscar perfil.' });
+    }
+  },
+
+  atualizarPerfil: async (req, res) => {
+    const { id } = req.params;
+    const { nome, celular } = req.body;
+    try {
+      const usuario = await prisma.usuario.update({
+        where: { id: parseInt(id) },
+        data: { nome, celular },
+      });
+      return res.json(usuario);
+    } catch (error) {
+      return res.status(500).json({ erro: 'Erro ao atualizar perfil.' });
+    }
+  },
 };
-
-exports.getUsuarioPorId = async (req, res) => {
-  try {
-    const usuario = await db.Usuario.findByPk(req.params.id);
-    if (!usuario) return res.status(404).json({ erro: 'Usu�rio n�o encontrado' });
-    res.json(usuario);
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar usu�rio' });
-  }
-};
-
-
-

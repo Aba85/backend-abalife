@@ -1,6 +1,5 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -8,39 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model usuarios {
-  id                    Int        @id @default(autoincrement())
-  nome                  String
-  email                 String     @unique
-  senha                 String
-  cpf                   String     @unique
-  endereco              String
-  foto                  String
-  telefone              String
-  perfil                String
-  criadoEm              DateTime   @default(now())
-  atualizadoEm          DateTime   @updatedAt
-  codigoIndicacao       String?    @unique
-  indicanteId           Int?
-  corridasComoMotorista corridas[] @relation("MotoristaCorridas")
-  corridas              corridas[] @relation("PassageiroCorridas")
-  indicante             usuarios?  @relation("IndicanteIndicado", fields: [indicanteId], references: [id])
-  indicados             usuarios[] @relation("IndicanteIndicado")
+model Usuario {
+  id              Int       @id @default(autoincrement())
+  nome            String
+  email           String    @unique
+  senha           String
+  cpf             String    @unique
+  celular         String
+  codigoIndicacao String?
+  corridas        Corrida[] @relation("PassageiroCorridas")
 }
 
-model corridas {
-  id           String    @id @default(uuid())
-  passageiroId Int
-  motoristaId  Int?
-  status       String
-  origem       String
-  destino      String
-  distanciaKm  Float?
-  valor        Float?
-  agendada     Boolean   @default(false)
-  dataHora     DateTime?
-  criadaEm     DateTime  @default(now())
-  atualizadaEm DateTime  @updatedAt
-  motorista    usuarios? @relation("MotoristaCorridas", fields: [motoristaId], references: [id])
-  passageiro   usuarios  @relation("PassageiroCorridas", fields: [passageiroId], references: [id])
+model Motorista {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  email     String    @unique
+  senha     String
+  cnh       String
+  veiculo   String
+  corridas  Corrida[] @relation("MotoristaCorridas")
+}
+
+model Corrida {
+  id            Int        @id @default(autoincrement())
+  origem        String
+  destino       String
+  formaPagamento String
+  valor         Float
+  status        String
+  dataInicio    DateTime   @default(now())
+  dataFim       DateTime?
+  passageiroId  Int
+  motoristaId   Int?
+
+  passageiro    Usuario    @relation("PassageiroCorridas", fields: [passageiroId], references: [id])
+  motorista     Motorista? @relation("MotoristaCorridas", fields: [motoristaId], references: [id])
+  avaliacao     Avaliacao?
+}
+
+model Avaliacao {
+  id         Int     @id @default(autoincrement())
+  corridaId  Int     @unique
+  nota       Float
+  tipo       String  // "motorista" ou "passageiro"
+
+  corrida    Corrida @relation(fields: [corridaId], references: [id])
 } 
