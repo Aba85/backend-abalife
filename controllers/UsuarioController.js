@@ -23,13 +23,13 @@ module.exports = {
           senha: senhaCriptografada,
           cpf,
           celular,
-          codigoIndicacao,
+          codigoIndicacao: codigoIndicacao || null, // opcional
         },
       });
 
       return res.status(201).json({ usuario: usuarioCriado });
     } catch (error) {
-      console.error(error);
+      console.error('❌ Erro ao cadastrar usuário:', error); // Exibe o erro real no terminal
       return res.status(500).json({ erro: 'Erro ao cadastrar usuário.' });
     }
   },
@@ -51,6 +51,7 @@ module.exports = {
       const token = jwt.sign({ id: usuario.id }, JWT_SECRET, { expiresIn: '7d' });
       return res.json({ token, usuario });
     } catch (error) {
+      console.error('❌ Erro ao realizar login:', error);
       return res.status(500).json({ erro: 'Erro ao realizar login.' });
     }
   },
@@ -62,6 +63,7 @@ module.exports = {
       if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado.' });
       return res.json(usuario);
     } catch (error) {
+      console.error('❌ Erro ao buscar perfil:', error);
       return res.status(500).json({ erro: 'Erro ao buscar perfil.' });
     }
   },
@@ -76,7 +78,8 @@ module.exports = {
       });
       return res.json(usuario);
     } catch (error) {
+      console.error('❌ Erro ao atualizar perfil:', error);
       return res.status(500).json({ erro: 'Erro ao atualizar perfil.' });
     }
   },
-};
+}; 
