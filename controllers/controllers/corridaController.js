@@ -2,8 +2,8 @@
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { geocodeEndereco } = require('../services/geocodingService');
-const { calcularDistanciaEmKm } = require('../utils/calculateDistance');
+const { geocodeEndereco } = require('../../services/geocodingService');
+const { calcularDistanciaEmKm } = require('../../utils/calculateDistance');
 
 exports.chamarCorrida = async (req, res) => {
   try {
