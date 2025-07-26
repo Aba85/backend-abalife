@@ -1,11 +1,10 @@
+// routes/corridas.js
+
 const express = require('express');
 const router = express.Router();
-const CorridaController = require('../controllers/CorridaController');
+const corridaController = require('../controllers/corridaController');
 
-router.post('/chamar', CorridaController.chamarCorrida);
-router.get('/passageiro/:id', CorridaController.listarCorridasPassageiro);
-router.get('/motorista/:id', CorridaController.listarCorridasMotorista);
-router.put('/:id/aceitar', CorridaController.aceitarCorrida);
-router.put('/:id/finalizar', CorridaController.finalizarCorrida);
+// Rota para chamar uma corrida
+router.post('/chamar', corridaController.chamarCorrida);
 
 module.exports = router;

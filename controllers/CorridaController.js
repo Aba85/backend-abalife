@@ -1,81 +1,75 @@
+// controllers/corridaController.js
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { geocodeEndereco } = require('../services/geocodingService');
+const { calcularDistanciaEmKm } = require('../utils/calculateDistance');
 
-module.exports = {
-  chamarCorrida: async (req, res) => {
-    const { passageiroId, origem, destino, formaPagamento, valor } = req.body;
-    try {
-      const corrida = await prisma.corrida.create({
-        data: {
-          passageiroId,
-          origem,
-          destino,
-          formaPagamento,
-          valor,
-          status: 'pendente',
-        },
-      });
-      return res.status(201).json(corrida);
-    } catch (error) {
-      return res.status(500).json({ erro: 'Erro ao chamar corrida.' });
-    }
-  },
+exports.chamarCorrida = async (req, res) => {
+  try {
+    const {
+      passageiroId,
+      enderecoEmbarque,
+      enderecoDestino,
+      latitudeEmbarque,
+      longitudeEmbarque,
+      latitudeDestino,
+      longitudeDestino,
+      categoria,
+      formaPagamento,
+      valorOferta
+    } = req.body;
 
-  listarCorridasPassageiro: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const corridas = await prisma.corrida.findMany({
-        where: { passageiroId: parseInt(id) },
-      });
-      return res.json(corridas);
-    } catch (error) {
-      return res.status(500).json({ erro: 'Erro ao listar corridas.' });
-    }
-  },
+    let localEmbarque = { latitude: latitudeEmbarque, longitude: longitudeEmbarque };
+    let localDestino = { latitude: latitudeDestino, longitude: longitudeDestino };
 
-  listarCorridasMotorista: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const corridas = await prisma.corrida.findMany({
-        where: { motoristaId: parseInt(id) },
-      });
-      return res.json(corridas);
-    } catch (error) {
-      return res.status(500).json({ erro: 'Erro ao listar corridas.' });
+    // Buscar coordenadas se o endereço foi digitado e não vieram coordenadas
+    if ((!latitudeEmbarque || !longitudeEmbarque) && enderecoEmbarque) {
+      const resultado = await geocodeEndereco(enderecoEmbarque);
+      if (!resultado) return res.status(400).json({ erro: 'Endereço de embarque inválido' });
+      localEmbarque = {
+        latitude: resultado.latitude,
+        longitude: resultado.longitude,
+      };
     }
-  },
 
-  aceitarCorrida: async (req, res) => {
-    const { id } = req.params;
-    const { motoristaId } = req.body;
-    try {
-      const corrida = await prisma.corrida.update({
-        where: { id: parseInt(id) },
-        data: {
-          motoristaId,
-          status: 'aceita',
-        },
-      });
-      return res.json(corrida);
-    } catch (error) {
-      return res.status(500).json({ erro: 'Erro ao aceitar corrida.' });
+    if ((!latitudeDestino || !longitudeDestino) && enderecoDestino) {
+      const resultado = await geocodeEndereco(enderecoDestino);
+      if (!resultado) return res.status(400).json({ erro: 'Endereço de destino inválido' });
+      localDestino = {
+        latitude: resultado.latitude,
+        longitude: resultado.longitude,
+      };
     }
-  },
 
-  finalizarCorrida: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const corrida = await prisma.corrida.update({
-        where: { id: parseInt(id) },
-        data: {
-          status: 'finalizada',
-          dataFim: new Date(),
-        },
-      });
-      return res.json(corrida);
-    } catch (error) {
-      return res.status(500).json({ erro: 'Erro ao finalizar corrida.' });
-    }
-  },
+    // Calcular distância
+    const distanciaKm = calcularDistanciaEmKm(
+      localEmbarque.latitude,
+      localEmbarque.longitude,
+      localDestino.latitude,
+      localDestino.longitude
+    );
+
+    const novaCorrida = await prisma.corrida.create({
+      data: {
+        passageiroId,
+        categoria,
+        formaPagamento,
+        valorOferta,
+        status: 'pendente',
+        enderecoEmbarque,
+        enderecoDestino,
+        latitudeEmbarque: localEmbarque.latitude,
+        longitudeEmbarque: localEmbarque.longitude,
+        latitudeDestino: localDestino.latitude,
+        longitudeDestino: localDestino.longitude,
+        distanciaKm,
+      },
+    });
+
+    return res.status(201).json(novaCorrida);
+  } catch (erro) {
+    console.error('Erro ao chamar corrida:', erro);
+    return res.status(500).json({ erro: 'Erro interno ao chamar corrida' });
+  }
 };
-
